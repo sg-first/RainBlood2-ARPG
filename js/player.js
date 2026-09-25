@@ -10,11 +10,15 @@
     MAX_HP: 320,
     MAX_MP: 100,
 
-    /* 各动作时间轴（秒） */
+    /* 各动作时间轴（秒）
+       攻击本体动画取自 assets/fx/soulaction-attack.png（key: atk_combo）：
+         帧 0 = 待机姿态，帧 4/5/6 = 三个挥砍姿势；
+         帧 1~3 / 6~8 / 10~11 是刀光弧，留给各段的 slashClip 叠加，故不放进本体帧。
+       帧率决定了「挥砍姿势落在判定帧上」：例如 a1 判定在 .12s，10fps 时第 2 帧(4)正好在 .10s。 */
     A: {
       /* 连段 1：横斩 */
       a1: {
-        total: .40, clip: ['hero_atk', [0, 1, 2, 3], 26], clipFrom: .06,
+        total: .40, clip: ['atk_combo', [0, 4, 5, 6], 10],
         hits: [{ t: .12, w: 140, h: 130, ox: 88, oy: 104, dmg: 11, kb: 230, kbY: 0, hitstop: 4, shake: 3.2, stun: .26 }],
         lunge: { t0: .10, t1: .22, v: 235 },
         cancel: .22, sfx: 'slash',
@@ -23,16 +27,17 @@
       },
       /* 连段 2：撩斩 */
       a2: {
-        total: .44, clip: ['hero_atk', [1, 2, 3, 3], 26], clipFrom: .04,
+        total: .44, clip: ['atk_combo', [0, 4, 5, 6], 9],
         hits: [{ t: .11, w: 148, h: 150, ox: 92, oy: 118, dmg: 14, kb: 250, kbY: 120, hitstop: 5, shake: 4, stun: .3 }],
         lunge: { t0: .09, t1: .21, v: 265 },
         cancel: .24, sfx: 'slash',
-        slashClip: ['atk_combo', [6, 7, 8], 30],
+        // 刀光只取纯弧光帧（第 6 帧含角色，放进来会跟本体叠出幻影）
+        slashClip: ['atk_combo', [7, 8, 9], 30],
         slash: { ox: 96, oy: 124, scale: 1.65, delay: .09, rot: -.4 },
       },
       /* 连段 3：终结斩 */
       a3: {
-        total: .72, clip: ['hero_atk', [0, 3, 3, 3, 3, 3], 13], clipFrom: .05,
+        total: .72, clip: ['atk_combo', [0, 4, 5, 6], 5.5],
         hits: [{ t: .19, w: 190, h: 190, ox: 104, oy: 122, dmg: 26, kb: 430, kbY: 330, hitstop: 9, shake: 9, stun: .62, crit: false }],
         lunge: { t0: .16, t1: .30, v: 320 },
         cancel: .52, sfx: 'slashhvy',
@@ -42,7 +47,7 @@
       },
       /* 冲刺斩 */
       adash: {
-        total: .48, clip: ['hero_atk', [1, 2, 3, 3], 24], clipFrom: .03,
+        total: .48, clip: ['atk_combo', [0, 4, 5, 6, 6], 10.4],
         hits: [{ t: .09, w: 210, h: 160, ox: 118, oy: 106, dmg: 20, kb: 400, kbY: 60, hitstop: 7, shake: 6, stun: .45 }],
         lunge: { t0: .06, t1: .26, v: 520 },
         cancel: .3, sfx: 'slashhvy',
@@ -51,18 +56,18 @@
       },
       /* 空中斩 */
       aair: {
-        total: .44, clip: ['hero_atk', [1, 2, 3], 24], clipFrom: .03,
+        total: .44, clip: ['atk_combo', [0, 4, 5, 6, 6], 11.4],
         hits: [{ t: .08, w: 170, h: 170, ox: 80, oy: 92, dmg: 17, kb: 200, kbY: -140, hitstop: 6, shake: 5, stun: .4 }],
         cancel: .3, sfx: 'slash',
-        slashClip: ['atk_combo', [6, 7, 8], 30],
+        slashClip: ['atk_combo', [7, 8, 9], 30],
         slash: { ox: 84, oy: 104, scale: 1.75, delay: .06, rot: .5 },
       },
       /* 上挑（对空） */
       aup: {
-        total: .5, clip: ['hero_atk', [0, 3, 3], 20], clipFrom: .04,
+        total: .5, clip: ['atk_combo', [0, 4, 5, 6], 8],
         hits: [{ t: .13, w: 130, h: 230, ox: 66, oy: 170, dmg: 18, kb: 150, kbY: 520, hitstop: 7, shake: 5, stun: .5 }],
         cancel: .38, sfx: 'slashhvy',
-        slashClip: ['atk_combo', [6, 7, 8], 26],
+        slashClip: ['atk_combo', [7, 8, 9], 26],
         slash: { ox: 70, oy: 150, scale: 1.8, delay: .11, rot: -1.2 },
       },
     },
@@ -110,13 +115,16 @@
       this.clip('runSlow', 'hero_walk', RB.AnimUtil.row(8, 2, 4), 8, { loop: true });
       this.clip('stand', 'hero_walk2', RB.AnimUtil.row(8, 2, 4), 5, { loop: true });
       this.clip('guard', 'hero_guard', [0, 1, 2, 3], 7, { loop: true });
-      this.clip('hurt', 'hero_hurt', [0, 1, 2, 3], 14, { loop: false, hold: 3 });
+      // 受击：chara 里的 soulbattler_attackone.png 才是「受击」姿势（下蹲脱刀），不是攻击图
+      this.clip('hurt', 'hero_atk', [0, 1, 2, 3], 14, { loop: false, hold: 3 });
       this.clip('miss', 'hero_miss', [0, 1, 2, 3], 16, { loop: false });
+      // 在空中的动画，现在没有合适的
       this.clip('jump', 'hero_guard', [0], 1, { loop: false });
       this.clip('jumpup', 'hero_atk', [1], 1, { loop: false });
       this.clip('air', 'hero_atk', [2], 1, { loop: false });
       this.clip('fall', 'hero_atk', [2, 3], 6, { loop: true });
       this.clip('land', 'hero_guard', [0, 3], 14, { loop: false, hold: 2 });
+      
       this.clip('dodgeUp', 'hero_miss', [2, 3], 18, { loop: false });
       this.clip('dodgeDown', 'hero_guard', [0, 1], 12, { loop: false });
       // 攻击
@@ -138,16 +146,13 @@
         }
       }
       // 素材基线朝向表（唯一定义处）：+1=素材本身朝右，-1=素材本身朝左。
-      // 行走/站立图 hero_walk(soul.png)、hero_walk2(soulstand.png) 取 row2 —— 朝右；
-      // 其余战斗立绘（含 idle 的 soulbattler.png，"刀朝内拿"）—— 朝左。
-      // 未在表中声明的素材一律按朝右(+1)处理。
-      const BASE_FACE = {
-        hero_walk: 1, hero_walk2: 1, hero_stand: 1,
-        hero_idle: -1,
-      };
+      // 只有行走/站立图（soul.png / soulstand*.png 取 row2）是朝右；
+      // 其余战斗立绘 soulbattler*.png（idle/attackone/guard/hurt/miss）与 fx 动作条
+      // （soulaction-*.png / soul-*.png）经逐像素比对都是朝左，故默认按 -1 处理。
+      const FACE_RIGHT = { hero_walk: 1, hero_walk2: 1, hero_stand: 1 };
       for (const k in this.clips) {
         const c = this.clips[k];
-        c.baseFace = BASE_FACE[c.key] === -1 ? -1 : 1;
+        c.baseFace = FACE_RIGHT[c.key] === 1 ? 1 : -1;
       }
     }
 
@@ -483,7 +488,8 @@
         const sy = this.y - a.slash.oy;
         Fx.add(new RB.SpriteFx(clip.key, sx, sy, {
           frames: clip.frames, fps: clip.fps, scale: a.slash.scale,
-          flip: this.face, blend: 'source-over', alpha: .98, z: 55,
+          // baseFace:-1 —— soulaction-attack.png 与本体立绘一样是朝左绘制，必须跟本体一起镜像
+          flip: this.face, baseFace: -1, blend: 'source-over', alpha: .98, z: 55,
         }));
       }
 
