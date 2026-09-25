@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>血雨 · 墨斩 | RAINBLOOD: INK SLASH</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="stage">
+  <canvas id="game" width="1280" height="720"></canvas>
+
+  <!-- 加载 -->
+  <div id="loader" class="screen">
+    <div class="ink-title">血 雨</div>
+    <div class="ink-sub">墨 斩</div>
+    <div class="bar"><i id="loadBar"></i></div>
+    <div class="tip" id="loadTip">研墨中…</div>
+  </div>
+
+  <!-- 标题 -->
+  <div id="title" class="screen hidden">
+    <div class="titleWrap">
+      <div class="tjBig">血 雨</div>
+      <div class="tjSub">RAINBLOOD</div>
+      <div class="tjRule"></div>
+      <div class="tjCn">墨 斩</div>
+      <div class="tjTag">一 剑 一 世 界 &nbsp;·&nbsp; 血 落 成 雨</div>
+      <button class="btn" id="btnStart">开 始 屠 杀</button>
+      <button class="btn ghost" id="btnHelp">操 作 说 明</button>
+      <div class="credit">美术素材源自《血雨》系列 · H5 同人重构</div>
+    </div>
+  </div>
+
+  <!-- 操作说明 -->
+  <div id="help" class="screen hidden">
+    <div class="panel">
+      <h2>操 作</h2>
+      <table class="keys">
+        <tr><td><kbd>A</kbd> <kbd>D</kbd> / <kbd>←</kbd> <kbd>→</kbd></td><td>移动</td></tr>
+        <tr><td><kbd>W</kbd> / <kbd>↑</kbd></td><td>上段闪避（穿过背后）</td></tr>
+        <tr><td><kbd>S</kbd> / <kbd>↓</kbd></td><td>下段伏身</td></tr>
+        <tr><td><kbd>J</kbd></td><td>斩击 · 三连段</td></tr>
+        <tr><td><kbd>K</kbd></td><td>拔刀术「居合」（耗气 30）</td></tr>
+        <tr><td><kbd>L</kbd></td><td>格挡 / 弹反</td></tr>
+        <tr><td><kbd>Shift</kbd></td><td>疾走 · 冲刺斩</td></tr>
+        <tr><td><kbd>U</kbd></td><td>奥义「十方俱灭」（满气）</td></tr>
+        <tr><td><kbd>P</kbd> / <kbd>Esc</kbd></td><td>暂停</td></tr>
+      </table>
+      <h2>要 诀</h2>
+      <ul class="notes">
+        <li>连击不断 → 伤害倍率越高，气回复越快。</li>
+        <li>敌人出手前有红光闪烁，此刻格挡可触发<b>弹反</b>，敌人陷入大硬直。</li>
+        <li>背后攻击造成 <b>1.5 倍</b> 伤害。</li>
+        <li>冲刺可取消斩击后摇，打出无限连。</li>
+      </ul>
+      <button class="btn" id="btnHelpBack">返 回</button>
+    </div>
+  </div>
+
+  <!-- 暂停 -->
+  <div id="pause" class="screen hidden">
+    <div class="pauseWrap">
+      <div class="pTitle">暂 停</div>
+      <button class="btn" id="btnResume">继 续</button>
+      <button class="btn ghost" id="btnRestart">重 新 开 始</button>
+      <button class="btn ghost" id="btnQuit">回 到 标 题</button>
+    </div>
+  </div>
+
+  <!-- 结算 -->
+  <div id="over" class="screen hidden">
+    <div class="overWrap">
+      <div class="oTitle" id="overTitle">死 了</div>
+      <div class="oQuote" id="overQuote"></div>
+      <div class="stats" id="overStats"></div>
+      <button class="btn" id="btnAgain">再 战</button>
+      <button class="btn ghost" id="btnTitle">回 到 标 题</button>
+    </div>
+  </div>
+
+  <!-- 关卡推进 -->
+  <div id="sceneBanner" class="banner hidden"><span id="bannerText"></span></div>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/assets.js"></script>
+<script src="js/anim.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/post.js"></script>
+<script src="js/entity.js"></script>
+<script src="js/player.js"></script>
+<script src="js/enemy.js"></script>
+<script src="js/level.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>

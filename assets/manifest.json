@@ -1,0 +1,1360 @@
+{
+ "frame": 192,
+ "chara": {
+  "hero_idle": {
+   "src": "assets/chara/soulbattler.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "hero_atk": {
+   "src": "assets/chara/soulbattler_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "hero_hurt": {
+   "src": "assets/chara/soulbattler_hurt.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "hero_guard": {
+   "src": "assets/chara/soulbattler_fangyu.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "hero_miss": {
+   "src": "assets/chara/soulbattler_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "hero_walk": {
+   "src": "assets/chara/soul.png",
+   "cols": 8,
+   "rows": 4,
+   "w": 1536,
+   "h": 768
+  },
+  "hero_walk2": {
+   "src": "assets/chara/soulstand.png",
+   "cols": 8,
+   "rows": 4,
+   "w": 1536,
+   "h": 768
+  },
+  "hero_stand": {
+   "src": "assets/chara/soulstand2.png",
+   "cols": 8,
+   "rows": 4,
+   "w": 1536,
+   "h": 768
+  },
+  "hero_shadow": {
+   "src": "assets/chara/soul-shadow.png",
+   "cols": 8,
+   "rows": 5,
+   "w": 1536,
+   "h": 1024
+  },
+  "hero_alt_idle": {
+   "src": "assets/chara/soulbattler2.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "hero_alt_atk": {
+   "src": "assets/chara/soulbattler2_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "hero_alt_hurt": {
+   "src": "assets/chara/soulbattler2_hurt.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "hero_alt_guard": {
+   "src": "assets/chara/soulbattler2_fangyu.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "tiegui_idle": {
+   "src": "assets/chara/tieguibattler.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "tiegui_atk": {
+   "src": "assets/chara/tieguibattler_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "tiegui_miss": {
+   "src": "assets/chara/tieguibattler_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "muxiaokui_idle": {
+   "src": "assets/chara/muxiaokuibattler.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "muxiaokui_atk": {
+   "src": "assets/chara/muxiaokuibattler_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "muxiaokui_miss": {
+   "src": "assets/chara/muxiaokuibattler_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "shanzei1_idle": {
+   "src": "assets/chara/shanzeibattle1.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "shanzei1_atk": {
+   "src": "assets/chara/shanzeibattle1_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "shanzei1_miss": {
+   "src": "assets/chara/shanzeibattle1_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "shanzei2_idle": {
+   "src": "assets/chara/shanzeibattle2.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "shanzei2_atk": {
+   "src": "assets/chara/shanzeibattle2_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "shanzei2_miss": {
+   "src": "assets/chara/shanzeibattle2_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "yingmei_idle": {
+   "src": "assets/chara/yingmeibattler.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "yingmei_atk": {
+   "src": "assets/chara/yingmeibattler_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "yingmei_miss": {
+   "src": "assets/chara/yingmeibattler_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "slashguichai_idle": {
+   "src": "assets/chara/slashguichaibattler.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "slashguichai_atk": {
+   "src": "assets/chara/slashguichaibattler_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "slashguichai_atk2": {
+   "src": "assets/chara/slashguichaibattler_attacktwo.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "slashguichai_miss": {
+   "src": "assets/chara/slashguichaibattler_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "baijiankeb_idle": {
+   "src": "assets/chara/baijiankeb.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "baijiankeb_atk": {
+   "src": "assets/chara/baijiankeb_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "baijiankeb_atk2": {
+   "src": "assets/chara/baijiankeb_attacktwo.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "baijiankeb_miss": {
+   "src": "assets/chara/baijiankeb_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "blader_idle": {
+   "src": "assets/chara/bladerbattler.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "blader_atk": {
+   "src": "assets/chara/bladerbattler_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "blader_miss": {
+   "src": "assets/chara/bladerbattler_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "triyingmei_idle": {
+   "src": "assets/chara/3yingmei.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "triyingmei_atk": {
+   "src": "assets/chara/3yingmei_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "triyingmei_miss": {
+   "src": "assets/chara/3yingmei_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "xingmang_idle": {
+   "src": "assets/chara/xingmangbattler.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "xingmang_atk": {
+   "src": "assets/chara/xingmangbattler_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "xingmang_miss": {
+   "src": "assets/chara/xingmangbattler_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "zuoshang_idle": {
+   "src": "assets/chara/zuoshangbattler.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "zuoshang_atk": {
+   "src": "assets/chara/zuoshangbattler_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "zuoshang_miss": {
+   "src": "assets/chara/zuoshangbattler_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "yancui_idle": {
+   "src": "assets/chara/yancuibattler.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "yancui_atk": {
+   "src": "assets/chara/yancuibattler_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "yancui_miss": {
+   "src": "assets/chara/yancuibattler_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "zangwudi_idle": {
+   "src": "assets/chara/zangwudibattler.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "zangwudi_atk": {
+   "src": "assets/chara/zangwudibattler_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "zangwudi_miss": {
+   "src": "assets/chara/zangwudibattler_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "zangwudi_skill_idle": {
+   "src": "assets/chara/zangwudiskill.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "zangwudi_skill_atk": {
+   "src": "assets/chara/zangwudiskill_attackone.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  },
+  "zangwudi_skill_miss": {
+   "src": "assets/chara/zangwudiskill_miss.png",
+   "cols": 4,
+   "rows": 1,
+   "w": 768,
+   "h": 192
+  }
+ },
+ "fx": {
+  "atk_combo": {
+   "src": "assets/fx/soulaction-attack.png",
+   "cols": 5,
+   "rows": 5,
+   "w": 960,
+   "h": 960
+  },
+  "atk_draw": {
+   "src": "assets/fx/soulaction-draw.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "skill_hideslash": {
+   "src": "assets/fx/soul-hideslash.png",
+   "cols": 5,
+   "rows": 7,
+   "w": 960,
+   "h": 1344
+  },
+  "skill_powerslash": {
+   "src": "assets/fx/soul-powerslash.png",
+   "cols": 5,
+   "rows": 11,
+   "w": 960,
+   "h": 2112
+  },
+  "skill_focusslash": {
+   "src": "assets/fx/soulaction-focusslash.png",
+   "cols": 5,
+   "rows": 11,
+   "w": 960,
+   "h": 2112
+  },
+  "skill_omnislash": {
+   "src": "assets/fx/soulaction-omnislash.png",
+   "cols": 5,
+   "rows": 12,
+   "w": 960,
+   "h": 2304
+  },
+  "skill_twilight": {
+   "src": "assets/fx/soulaction-twilight.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "skill_ghost": {
+   "src": "assets/fx/soulaction-ghost.png",
+   "cols": 5,
+   "rows": 5,
+   "w": 960,
+   "h": 960
+  },
+  "skill_change": {
+   "src": "assets/fx/soulaction-change.png",
+   "cols": 5,
+   "rows": 5,
+   "w": 960,
+   "h": 960
+  },
+  "skill_againstcar": {
+   "src": "assets/fx/soulaction-againstcar.png",
+   "cols": 5,
+   "rows": 5,
+   "w": 960,
+   "h": 960
+  },
+  "e_guichaiaction": {
+   "src": "assets/fx/guichaiaction.png",
+   "cols": 5,
+   "rows": 3,
+   "w": 960,
+   "h": 576
+  },
+  "e_headguichaiaction": {
+   "src": "assets/fx/headguichaiaction.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "e_lightguichaiaction": {
+   "src": "assets/fx/lightguichaiaction.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "e_slashguichaiaction": {
+   "src": "assets/fx/slashguichaiaction.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "e_muxiaokuiaction": {
+   "src": "assets/fx/muxiaokuiaction.png",
+   "cols": 5,
+   "rows": 15,
+   "w": 960,
+   "h": 2880
+  },
+  "e_shanzeiaction": {
+   "src": "assets/fx/shanzeiaction.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "e_shanzeiaction2": {
+   "src": "assets/fx/shanzeiaction2.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "e_shanzeication2b": {
+   "src": "assets/fx/shanzeication2b.png",
+   "cols": 5,
+   "rows": 10,
+   "w": 960,
+   "h": 1920
+  },
+  "e_shanzeishowup": {
+   "src": "assets/fx/shanzeishowup.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "e_yingmeiaction": {
+   "src": "assets/fx/yingmeiaction.png",
+   "cols": 5,
+   "rows": 9,
+   "w": 960,
+   "h": 1728
+  },
+  "e_zangwudiaction": {
+   "src": "assets/fx/zangwudiaction.png",
+   "cols": 5,
+   "rows": 18,
+   "w": 960,
+   "h": 3456
+  },
+  "e_tieguizhenlie": {
+   "src": "assets/fx/tieguizhenlie.png",
+   "cols": 5,
+   "rows": 10,
+   "w": 960,
+   "h": 1920
+  },
+  "e_tieguishuanghong": {
+   "src": "assets/fx/tieguishuanghong.png",
+   "cols": 5,
+   "rows": 16,
+   "w": 960,
+   "h": 3072
+  },
+  "e_baijianke_action": {
+   "src": "assets/fx/baijianke_action.png",
+   "cols": 5,
+   "rows": 4,
+   "w": 960,
+   "h": 768
+  },
+  "e_baijianke_action2": {
+   "src": "assets/fx/baijianke_action2.png",
+   "cols": 5,
+   "rows": 4,
+   "w": 960,
+   "h": 768
+  },
+  "e_bladeraction": {
+   "src": "assets/fx/bladeraction.png",
+   "cols": 5,
+   "rows": 5,
+   "w": 960,
+   "h": 960
+  },
+  "e_changhongaction": {
+   "src": "assets/fx/changhongaction.png",
+   "cols": 5,
+   "rows": 18,
+   "w": 960,
+   "h": 3456
+  },
+  "e_xingmang-fangxing-jian": {
+   "src": "assets/fx/xingmang-fangxing-jian.png",
+   "cols": 5,
+   "rows": 29,
+   "w": 960,
+   "h": 5568
+  },
+  "e_xingmang-fanxing-ren": {
+   "src": "assets/fx/xingmang-fanxing-ren.png",
+   "cols": 5,
+   "rows": 24,
+   "w": 960,
+   "h": 4608
+  },
+  "e_hammerer": {
+   "src": "assets/fx/hammerer.png",
+   "cols": 5,
+   "rows": 9,
+   "w": 960,
+   "h": 1728
+  },
+  "e_soul-beingpined": {
+   "src": "assets/fx/soul-beingpined.png",
+   "cols": 5,
+   "rows": 3,
+   "w": 960,
+   "h": 576
+  },
+  "e_soul-disappear": {
+   "src": "assets/fx/soul-disappear.png",
+   "cols": 5,
+   "rows": 3,
+   "w": 960,
+   "h": 576
+  },
+  "e_soul-hideslash": {
+   "src": "assets/fx/soul-hideslash.png",
+   "cols": 5,
+   "rows": 7,
+   "w": 960,
+   "h": 1344
+  },
+  "e_soul-powerslash": {
+   "src": "assets/fx/soul-powerslash.png",
+   "cols": 5,
+   "rows": 11,
+   "w": 960,
+   "h": 2112
+  },
+  "001-Action01": {
+   "src": "assets/fx/001-Action01.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "002-Action02": {
+   "src": "assets/fx/002-Action02.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "003-Attack01": {
+   "src": "assets/fx/003-Attack01.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "004-Attack02": {
+   "src": "assets/fx/004-Attack02.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "005-Attack03": {
+   "src": "assets/fx/005-Attack03.png",
+   "cols": 5,
+   "rows": 1,
+   "w": 960,
+   "h": 192
+  },
+  "006-Weapon01": {
+   "src": "assets/fx/006-Weapon01.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "007-Weapon02": {
+   "src": "assets/fx/007-Weapon02.png",
+   "cols": 5,
+   "rows": 5,
+   "w": 960,
+   "h": 960
+  },
+  "008-Weapon03": {
+   "src": "assets/fx/008-Weapon03.png",
+   "cols": 5,
+   "rows": 4,
+   "w": 960,
+   "h": 768
+  },
+  "009-Weapon04": {
+   "src": "assets/fx/009-Weapon04.png",
+   "cols": 5,
+   "rows": 5,
+   "w": 960,
+   "h": 960
+  },
+  "010-Weapon05": {
+   "src": "assets/fx/010-Weapon05.png",
+   "cols": 5,
+   "rows": 3,
+   "w": 960,
+   "h": 576
+  },
+  "012-Heal01": {
+   "src": "assets/fx/012-Heal01.png",
+   "cols": 5,
+   "rows": 1,
+   "w": 960,
+   "h": 192
+  },
+  "013-Heal02": {
+   "src": "assets/fx/013-Heal02.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "015-Fire01": {
+   "src": "assets/fx/015-Fire01.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "016-Ice01": {
+   "src": "assets/fx/016-Ice01.png",
+   "cols": 4,
+   "rows": 5,
+   "w": 957,
+   "h": 960
+  },
+  "017-Thunder01": {
+   "src": "assets/fx/017-Thunder01.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "023-Burst01": {
+   "src": "assets/fx/023-Burst01.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "024-Support01": {
+   "src": "assets/fx/024-Support01.png",
+   "cols": 4,
+   "rows": 2,
+   "w": 959,
+   "h": 384
+  },
+  "025-Support02": {
+   "src": "assets/fx/025-Support02.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "026-Support03": {
+   "src": "assets/fx/026-Support03.png",
+   "cols": 5,
+   "rows": 1,
+   "w": 960,
+   "h": 192
+  },
+  "027-Support04": {
+   "src": "assets/fx/027-Support04.png",
+   "cols": 5,
+   "rows": 3,
+   "w": 960,
+   "h": 576
+  },
+  "028-State01": {
+   "src": "assets/fx/028-State01.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "029-Emotion01": {
+   "src": "assets/fx/029-Emotion01.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "030-Explosion01": {
+   "src": "assets/fx/030-Explosion01.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "dust": {
+   "src": "assets/fx/dust.png",
+   "cols": 5,
+   "rows": 1,
+   "w": 960,
+   "h": 192
+  },
+  "jianqi": {
+   "src": "assets/fx/jianqi.png",
+   "cols": 5,
+   "rows": 5,
+   "w": 960,
+   "h": 960
+  },
+  "liuxing": {
+   "src": "assets/fx/liuxing.png",
+   "cols": 5,
+   "rows": 23,
+   "w": 960,
+   "h": 4416
+  },
+  "liuxingshou": {
+   "src": "assets/fx/liuxingshou.png",
+   "cols": 5,
+   "rows": 11,
+   "w": 960,
+   "h": 2112
+  },
+  "snowmoon1": {
+   "src": "assets/fx/snowmoon1.png",
+   "cols": 5,
+   "rows": 3,
+   "w": 960,
+   "h": 582
+  },
+  "snowmoon2": {
+   "src": "assets/fx/snowmoon2.png",
+   "cols": 5,
+   "rows": 8,
+   "w": 960,
+   "h": 1536
+  },
+  "moonblade": {
+   "src": "assets/fx/moonblade.png",
+   "cols": 5,
+   "rows": 9,
+   "w": 960,
+   "h": 1728
+  },
+  "moonspeedslash": {
+   "src": "assets/fx/moonspeedslash.png",
+   "cols": 5,
+   "rows": 9,
+   "w": 960,
+   "h": 1728
+  },
+  "moonattack1": {
+   "src": "assets/fx/moonattack1.png",
+   "cols": 5,
+   "rows": 8,
+   "w": 960,
+   "h": 1536
+  },
+  "moonattack2": {
+   "src": "assets/fx/moonattack2.png",
+   "cols": 5,
+   "rows": 8,
+   "w": 960,
+   "h": 1536
+  },
+  "moonactionmap": {
+   "src": "assets/fx/moonactionmap.png",
+   "cols": 5,
+   "rows": 4,
+   "w": 960,
+   "h": 768
+  },
+  "shadowatk": {
+   "src": "assets/fx/shadowatk.png",
+   "cols": 5,
+   "rows": 7,
+   "w": 960,
+   "h": 1344
+  },
+  "shadowbeingcut": {
+   "src": "assets/fx/shadowbeingcut.png",
+   "cols": 5,
+   "rows": 4,
+   "w": 960,
+   "h": 768
+  },
+  "lockatk": {
+   "src": "assets/fx/lockatk.png",
+   "cols": 5,
+   "rows": 8,
+   "w": 960,
+   "h": 1536
+  },
+  "lockskill1": {
+   "src": "assets/fx/lockskill1.png",
+   "cols": 5,
+   "rows": 8,
+   "w": 960,
+   "h": 1536
+  },
+  "lockskill2": {
+   "src": "assets/fx/lockskill2.png",
+   "cols": 5,
+   "rows": 8,
+   "w": 960,
+   "h": 1536
+  },
+  "chainatk": {
+   "src": "assets/fx/chainatk.png",
+   "cols": 5,
+   "rows": 20,
+   "w": 960,
+   "h": 3840
+  },
+  "shangexplode": {
+   "src": "assets/fx/shangexplode.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "shangstrikedown": {
+   "src": "assets/fx/shangstrikedown.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "shangdrawsword": {
+   "src": "assets/fx/shangdrawsword.png",
+   "cols": 5,
+   "rows": 5,
+   "w": 960,
+   "h": 960
+  },
+  "shangsword": {
+   "src": "assets/fx/shangsword.png",
+   "cols": 5,
+   "rows": 5,
+   "w": 960,
+   "h": 960
+  },
+  "shanggongji": {
+   "src": "assets/fx/shanggongji.png",
+   "cols": 5,
+   "rows": 9,
+   "w": 978,
+   "h": 1728
+  },
+  "shangskill2": {
+   "src": "assets/fx/shangskill2.png",
+   "cols": 5,
+   "rows": 11,
+   "w": 978,
+   "h": 2112
+  },
+  "shangskill3": {
+   "src": "assets/fx/shangskill3.png",
+   "cols": 5,
+   "rows": 11,
+   "w": 960,
+   "h": 2112
+  },
+  "mapcut": {
+   "src": "assets/fx/mapcut.png",
+   "cols": 5,
+   "rows": 5,
+   "w": 960,
+   "h": 960
+  },
+  "mapexplode": {
+   "src": "assets/fx/mapexplode.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "cutcar": {
+   "src": "assets/fx/cutcar.png",
+   "cols": 5,
+   "rows": 1,
+   "w": 960,
+   "h": 192
+  },
+  "jie": {
+   "src": "assets/fx/jie.png",
+   "cols": 5,
+   "rows": 20,
+   "w": 960,
+   "h": 3840
+  },
+  "tiandi": {
+   "src": "assets/fx/tiandi.png",
+   "cols": 5,
+   "rows": 8,
+   "w": 960,
+   "h": 1536
+  },
+  "decaymoon1": {
+   "src": "assets/fx/decaymoon1.png",
+   "cols": 5,
+   "rows": 7,
+   "w": 960,
+   "h": 1344
+  },
+  "decaymoon2": {
+   "src": "assets/fx/decaymoon2.png",
+   "cols": 5,
+   "rows": 8,
+   "w": 960,
+   "h": 1536
+  },
+  "beginningaction": {
+   "src": "assets/fx/beginningaction.png",
+   "cols": 5,
+   "rows": 4,
+   "w": 960,
+   "h": 768
+  },
+  "pastaction": {
+   "src": "assets/fx/pastaction.png",
+   "cols": 5,
+   "rows": 9,
+   "w": 960,
+   "h": 1728
+  },
+  "sidequestaction": {
+   "src": "assets/fx/sidequestaction.png",
+   "cols": 5,
+   "rows": 5,
+   "w": 960,
+   "h": 960
+  },
+  "cacoon": {
+   "src": "assets/fx/cacoon.png",
+   "cols": 5,
+   "rows": 20,
+   "w": 960,
+   "h": 3840
+  },
+  "yuaction": {
+   "src": "assets/fx/yuaction.png",
+   "cols": 5,
+   "rows": 5,
+   "w": 960,
+   "h": 960
+  },
+  "yuskill1": {
+   "src": "assets/fx/yuskill1.png",
+   "cols": 5,
+   "rows": 26,
+   "w": 960,
+   "h": 4992
+  },
+  "yuskill2": {
+   "src": "assets/fx/yuskill2.png",
+   "cols": 5,
+   "rows": 26,
+   "w": 960,
+   "h": 4992
+  },
+  "yuskill3": {
+   "src": "assets/fx/yuskill3.png",
+   "cols": 5,
+   "rows": 17,
+   "w": 960,
+   "h": 3264
+  },
+  "yuyaoattack": {
+   "src": "assets/fx/yuyaoattack.png",
+   "cols": 5,
+   "rows": 9,
+   "w": 960,
+   "h": 1824
+  },
+  "yuyaotieguishowup": {
+   "src": "assets/fx/yuyaotieguishowup.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  },
+  "fatthinactions": {
+   "src": "assets/fx/fatthinactions.png",
+   "cols": 5,
+   "rows": 4,
+   "w": 960,
+   "h": 768
+  },
+  "evilboyaction": {
+   "src": "assets/fx/evilboyaction.png",
+   "cols": 5,
+   "rows": 2,
+   "w": 960,
+   "h": 384
+  }
+ },
+ "bg": {
+  "main_tunnel": {
+   "src": "assets/bg/snaketunnel.png",
+   "w": 5120,
+   "h": 768
+  },
+  "city_day": {
+   "src": "assets/bg/city1.png",
+   "w": 1920,
+   "h": 480
+  },
+  "city_night": {
+   "src": "assets/bg/city1n.png",
+   "w": 1920,
+   "h": 480
+  },
+  "city2_day": {
+   "src": "assets/bg/city2.png",
+   "w": 1920,
+   "h": 960
+  },
+  "city3_day": {
+   "src": "assets/bg/city3.png",
+   "w": 1920,
+   "h": 480
+  },
+  "mountain1": {
+   "src": "assets/bg/mountain1.png",
+   "w": 1280,
+   "h": 1440
+  },
+  "mountain2": {
+   "src": "assets/bg/mountain2.png",
+   "w": 1280,
+   "h": 1440
+  },
+  "mountain3": {
+   "src": "assets/bg/mountain3.png",
+   "w": 960,
+   "h": 480
+  },
+  "mt_night": {
+   "src": "assets/bg/mountain1n.png",
+   "w": 1280,
+   "h": 1440
+  },
+  "guichairoad": {
+   "src": "assets/bg/guichairoad.png",
+   "w": 640,
+   "h": 640
+  },
+  "secretroad1": {
+   "src": "assets/bg/secretroad1.png",
+   "w": 1280,
+   "h": 1440
+  },
+  "secretroad2": {
+   "src": "assets/bg/secretroad2.png",
+   "w": 1280,
+   "h": 1440
+  },
+  "deep1": {
+   "src": "assets/bg/deep1.png",
+   "w": 1920,
+   "h": 960
+  },
+  "deep2": {
+   "src": "assets/bg/deep2.png",
+   "w": 1920,
+   "h": 960
+  },
+  "lastbridge1": {
+   "src": "assets/bg/lastbridge1.png",
+   "w": 2400,
+   "h": 480
+  },
+  "waterduct5": {
+   "src": "assets/bg/waterduct5.png",
+   "w": 2880,
+   "h": 360
+  },
+  "gate": {
+   "src": "assets/bg/gate.png",
+   "w": 960,
+   "h": 480
+  },
+  "tombroad1": {
+   "src": "assets/bg/tombroad1.png",
+   "w": 1280,
+   "h": 320
+  },
+  "tombroad2": {
+   "src": "assets/bg/tombroad2.png",
+   "w": 1280,
+   "h": 320
+  },
+  "ownhouse": {
+   "src": "assets/bg/ownhouse.png",
+   "w": 640,
+   "h": 480
+  },
+  "lonelyhouse": {
+   "src": "assets/bg/lonelyhouse.png",
+   "w": 1280,
+   "h": 480
+  },
+  "rift": {
+   "src": "assets/bg/rift.png",
+   "w": 1280,
+   "h": 405
+  },
+  "qingsong": {
+   "src": "assets/bg/qingsong.png",
+   "w": 960,
+   "h": 480
+  },
+  "bridge": {
+   "src": "assets/bg/bridge.png",
+   "w": 960,
+   "h": 480
+  },
+  "blacat": {
+   "src": "assets/bg/blacat.png",
+   "w": 960,
+   "h": 480
+  },
+  "bb_mountain": {
+   "src": "assets/bg/mountain.png",
+   "w": 768,
+   "h": 576
+  },
+  "bb_forest": {
+   "src": "assets/bg/secretforest.png",
+   "w": 768,
+   "h": 576
+  },
+  "bb_city1": {
+   "src": "assets/bg/city1.png",
+   "w": 768,
+   "h": 576
+  },
+  "bb_bridge": {
+   "src": "assets/bg/bridge.png",
+   "w": 768,
+   "h": 576
+  },
+  "bb_tombroad": {
+   "src": "assets/bg/tombroad.png",
+   "w": 768,
+   "h": 576
+  },
+  "bb_mountainnight": {
+   "src": "assets/bg/mountainnight.png",
+   "w": 768,
+   "h": 576
+  },
+  "bb_tongyou": {
+   "src": "assets/bg/tongyouroad.png",
+   "w": 768,
+   "h": 576
+  },
+  "bb_secretroad": {
+   "src": "assets/bg/secretroad.png",
+   "w": 768,
+   "h": 576
+  }
+ },
+ "ui": {
+  "head_hero": {
+   "src": "assets/ui/soulhead.png",
+   "w": 90,
+   "h": 120
+  },
+  "head_hero2": {
+   "src": "assets/ui/soulhead2.png",
+   "w": 90,
+   "h": 120
+  },
+  "head_hero3": {
+   "src": "assets/ui/soulhead3.png",
+   "w": 90,
+   "h": 120
+  },
+  "head_boss": {
+   "src": "assets/ui/shadowhead.png",
+   "w": 90,
+   "h": 120
+  },
+  "sm_soul": {
+   "src": "assets/ui/soulsmallhead.png",
+   "w": 61,
+   "h": 41
+  },
+  "sm_tiegui": {
+   "src": "assets/ui/tieguismallhead.png",
+   "w": 61,
+   "h": 41
+  },
+  "sm_muxiaokui": {
+   "src": "assets/ui/muxiaokuismallhead.png",
+   "w": 61,
+   "h": 41
+  },
+  "sm_shanzei": {
+   "src": "assets/ui/shanzeismallhead.png",
+   "w": 61,
+   "h": 41
+  },
+  "sm_yingmei": {
+   "src": "assets/ui/yingmeismallhead.png",
+   "w": 61,
+   "h": 41
+  },
+  "sm_slashguichai": {
+   "src": "assets/ui/slashguichaismallhead.png",
+   "w": 61,
+   "h": 41
+  },
+  "sm_zangwudi": {
+   "src": "assets/ui/zangwudismallhead.png",
+   "w": 61,
+   "h": 41
+  },
+  "sm_blader": {
+   "src": "assets/ui/bladersmallhead.png",
+   "w": 61,
+   "h": 41
+  },
+  "sm_baijianke": {
+   "src": "assets/ui/baijiankesmallhead.png",
+   "w": 61,
+   "h": 41
+  },
+  "sm_xingmang": {
+   "src": "assets/ui/starsmallhead.png",
+   "w": 61,
+   "h": 41
+  },
+  "blood": {
+   "src": "assets/ui/blood.png",
+   "w": 24,
+   "h": 24
+  },
+  "guard": {
+   "src": "assets/ui/guard.png",
+   "w": 24,
+   "h": 24
+  },
+  "bloodbag": {
+   "src": "assets/ui/bloodbag.png",
+   "w": 24,
+   "h": 24
+  }
+ }
+}
