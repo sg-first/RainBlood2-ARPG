@@ -9,7 +9,6 @@
     api: null,
     comboShow: 0, comboT: 0, comboScale: 1,
     mpFlash: 0, hpFlash: 0, hpLag: 1,
-    bannerT: 0, bannerText: '', bannerSub: '',
     waveInfo: null, waveInfoT: 0,
     tipT: 0, tipText: '',
     marquee: [], // 战斗日志
@@ -21,9 +20,6 @@
       this.comboShow = n; this.comboT = 2.6; this.comboScale = 1.55;
     },
     onWave(d) { this.waveInfo = d; this.waveInfoT = 3.2; },
-    onChapter(ch) {
-      this.bannerText = ch.title; this.bannerSub = ch.sub; this.bannerT = 3.4;
-    },
     tip(t, dur) { this.tipText = t; this.tipT = dur || 4; },
     push(t, color) {
       this.marquee.unshift({ t, color: color || '#ccc', life: 3.2 });
@@ -38,7 +34,6 @@
       this.comboScale = U.damp(this.comboScale, 1, 11, dt);
       this.mpFlash = Math.max(0, this.mpFlash - dt * 2.4);
       this.hpFlash = Math.max(0, this.hpFlash - dt * 2.2);
-      this.bannerT = Math.max(0, this.bannerT - dt);
       this.waveInfoT = Math.max(0, this.waveInfoT - dt);
       this.tipT = Math.max(0, this.tipT - dt);
       for (let i = this.marquee.length - 1; i >= 0; i--) {
@@ -66,7 +61,6 @@
       this._drawWaveInfo(ctx);
       this._drawTips(ctx, st);
       this._drawMarquee(ctx);
-      this._drawBanner(ctx);
 
       ctx.restore();
     },
@@ -338,29 +332,6 @@
         ctx.fillStyle = m.color;
         ctx.fillText(m.t, 44, 178 + i * 22);
       });
-      ctx.restore();
-    },
-
-    /* ---------- 章节横幅（Canvas 内备用，DOM 版为主） ---------- */
-    _drawBanner(ctx) {
-      if (this.bannerT <= 0) return;
-      const t = 1 - this.bannerT / 3.4;
-      let a = 1;
-      if (t < .16) a = t / .16;
-      else if (t > .78) a = (1 - t) / .22;
-      const blur = t < .16 ? (1 - t / .16) * 16 : (t > .78 ? (t - .78) / .22 * 8 : 0);
-      ctx.save();
-      ctx.globalAlpha = U.clamp(a, 0, 1);
-      ctx.textAlign = 'center';
-      ctx.filter = blur > .4 ? 'blur(' + blur + 'px)' : 'none';
-      ctx.font = '700 46px "Noto Serif SC",serif';
-      ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(0,0,0,.86)'; ctx.lineJoin = 'round';
-      ctx.strokeText(this.bannerText, C.VIEW_W / 2, 236);
-      ctx.fillStyle = '#f2ede4';
-      ctx.fillText(this.bannerText, C.VIEW_W / 2, 236);
-      ctx.font = '600 14px Georgia,serif';
-      ctx.fillStyle = 'rgba(197,18,31,.9)';
-      ctx.fillText(this.bannerSub, C.VIEW_W / 2, 274);
       ctx.restore();
     },
   };

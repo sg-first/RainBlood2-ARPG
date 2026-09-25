@@ -53,7 +53,7 @@
         loader: $('loader'), loadBar: $('loadBar'), loadTip: $('loadTip'),
         title: $('title'), help: $('help'), pause: $('pause'), over: $('over'),
         overTitle: $('overTitle'), overQuote: $('overQuote'), overStats: $('overStats'),
-        banner: $('sceneBanner'), bannerText: $('bannerText'),
+        banner: $('sceneBanner'), bannerText: $('bannerText'), bannerSub: $('bannerSub'),
       };
       $('btnStart').onclick = () => { Snd.resume(); Snd.play('uiok'); this.startRun(); };
       $('btnHelp').onclick = () => { Snd.play('ui'); this.el.title.classList.add('hidden'); this.el.help.classList.remove('hidden'); };
@@ -150,7 +150,6 @@
       Snd.startAmbience();
       Snd.setIntensity(.2);
       UI.comboShow = 0; UI.marquee = [];
-      UI.onChapter(this.level.chapter);
       UI.tip('按 J 挥刀 · Shift 冲刺 · L 格挡', 6);
       this._syncBanner();
     },
@@ -212,7 +211,7 @@
       });
       RB.bus.on('wave', d => UI.onWave(d));
       RB.bus.on('waveClear', i => { this._waveClearT = 1.2; });
-      RB.bus.on('chapter', ch => { UI.onChapter(ch); this._syncBanner(); Snd.play('tong', { vol: .8 }); });
+      RB.bus.on('chapter', () => { this._syncBanner(); Snd.play('tong', { vol: .8 }); });
       RB.bus.on('parry', () => { this.stats.parries++; UI.push('· 弹反！', '#9fd8ff'); });
       RB.bus.on('ultra', () => { this.stats.ultras++; UI.push('· 奥义 十方俱灭', '#ffd764'); });
       RB.bus.on('skill', () => { UI.push('· 拔刀术 居合', '#ffb0b0'); });
@@ -228,6 +227,7 @@
       const ch = this.level.chapter;
       const b = this.el.banner;
       this.el.bannerText.textContent = ch.title;
+      this.el.bannerSub.textContent = ch.sub;
       b.classList.remove('hidden');
       b.classList.remove('show');
       void b.offsetWidth;

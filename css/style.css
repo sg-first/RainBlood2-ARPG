@@ -171,11 +171,24 @@ kbd {
   color:#f0ece5; text-shadow:0 0 50px rgba(0,0,0,.95), 0 0 20px rgba(197,18,31,.5);
   padding-left:.46em;
 }
+.banner i {
+  display:block; margin-top:18px; font-style:normal;
+  font-family:Georgia,serif; font-size:14px; letter-spacing:.42em;
+  color:#c5121f; text-shadow:0 0 26px rgba(0,0,0,.9);
+  padding-left:.42em; opacity:0;
+}
 .banner.hidden { display:none; }
 .banner.show span { animation:bannerIn 2.6s cubic-bezier(.16,.9,.2,1) both; }
+.banner.show i { animation:bannerSubIn 2.6s ease both; }
 @keyframes bannerIn {
   0%   { opacity:0; filter:blur(22px); transform:translateY(24px) scale(1.1); letter-spacing:1.4em; }
   22%  { opacity:1; filter:blur(0);   transform:translateY(0) scale(1);     letter-spacing:.46em; }
   78%  { opacity:1; }
   100% { opacity:0; filter:blur(8px); letter-spacing:.6em; }
+}
+@keyframes bannerSubIn {
+  0%   { opacity:0; }
+  25%  { opacity:1; }
+  80%  { opacity:1; }
+  100% { opacity:0; }
 }
