@@ -224,7 +224,7 @@
     /* ---------------- 地面自由态 ---------------- */
     _groundedNeutral(dt, inp) {
       const ax = this._moveInput(inp);
-      const wantRun = Math.abs(ax) > .12;
+      const wantRun = ax !== 0;
 
       // 面向
       if (wantRun && !this._lockedFace) this.face = U.sign(ax);
@@ -280,7 +280,7 @@
       Fx.dust(this.x, C.GROUND_Y, 7, 0);
       Fx.ring(this.x, C.GROUND_Y - 4, 18, 'rgba(200,196,190,.4)');
       const ax = this._moveInput(inp);
-      if (Math.abs(ax) > .12) { this.face = U.sign(ax); this.vx = ax * 300; }
+      if (ax !== 0) { this.face = U.sign(ax); this.vx = ax * 300; }
       this.airActions = 0;
     }
 
@@ -289,7 +289,7 @@
       const target = ax * 315;
       const ctrl = this.airActions > 0 ? 700 : 1250;
       this.vx = U.approach(this.vx, target, ctrl * dt);
-      if (ax && this.airActions === 0) this.face = U.sign(ax);
+      if (ax !== 0 && this.airActions === 0) this.face = U.sign(ax);
 
       if (this.vy > 60) this.play('fall');
       else this.play('jumpup');
@@ -502,6 +502,14 @@
         if (this._consume('dash') && this.dashCD <= 0 && this.onGround) return this._startDash(this.face);
         if (this._consume('skill') && this.mp >= 30 && this.skillCD <= 0) return this._startSkill();
         if (this._consume('jump') && this.onGround) { this._fired = {}; this._jump(inp); return; }
+      }
+      // 移动取消：判定帧之后可以用方向键打断后摇，避免进入攻击后长时间不受控。
+      // 默认从最后一次判定帧起可取消（收招段全部可打断）；各段可用 mc 字段覆写。
+      // 若已缓冲攻击输入则不打断，否则按住方向键会打断连段（a1→a2→a3）。
+      const mc = a.mc === undefined ? a.hits[a.hits.length - 1].t : a.mc;
+      if (t >= mc && !this.buffer['light']) {
+        const ax = this._moveInput(inp);
+        if (ax !== 0) { this._fired = {}; this._toNeutral(); return; }
       }
       if (t >= a.total) { this._fired = {}; this._toNeutral(); }
     }
