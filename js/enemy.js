@@ -391,6 +391,8 @@
       this.squashTo(.9, .1);
       // 精英抵抗击退
       if (this.kbRes < .35) this.vx *= .5;
+      // 每次被击中都要溅血（溅血 / 火花 / 伤害数字 / 顿帧 / 震屏 / 音效）
+      super.onHurt(atk, dmg, fromBehind, dir);
     }
 
     _dying(dt) {

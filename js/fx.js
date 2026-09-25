@@ -80,6 +80,11 @@
   }
 
   /* ---------- 粒子 ---------- */
+  // 像素血点：统一尺寸 + 鲜红调色板（像素颗粒感）
+  const DOT = 4;                 // 每个血点的边长（px，2 的倍数）
+  const BLOOD_DOTS = ['#ff2b26', '#f0141e', '#ff4436', '#e00d1a', '#ff6a52'];
+  const bloodDotColor = () => (Math.random() < .5 ? '#ff2b26' : U.pick(BLOOD_DOTS));
+
   class Particle {
     constructor(x, y, o) {
       this.type = 'p';
@@ -96,6 +101,8 @@
       this.vr = o.vr || U.rand(-8, 8);
       this.blend = o.blend || 'source-over';
       this.stretch = o.stretch || 0;
+      this.grid = o.grid || 0;         // >0：像素网格（尺寸/坐标按此对齐）
+      this.splat = !!o.splat;          // 落地留下像素血迹
       this.dead = false;
       this.alpha = o.alpha === undefined ? 1 : o.alpha;
       this.z = o.z === undefined ? 40 : o.z;
@@ -108,6 +115,13 @@
       this.vx *= d; this.vy *= d;
       this.x += this.vx * dt; this.y += this.vy * dt;
       this.rot += this.vr * dt;
+      if (this.splat) {
+        const gy = RB.CFG ? RB.CFG.GROUND_Y : 596;
+        if (this.y >= gy) {
+          if (Math.random() < .55) Fx.groundBlood(this.x, gy, this.size, this.color);
+          this.dead = true;
+        }
+      }
     }
     draw(ctx) {
       const t = this.life / this.max;
@@ -127,6 +141,24 @@
           ctx.beginPath();
           ctx.ellipse(0, 0, L, sz * .55, 0, 0, 6.2832);
           ctx.fill();
+          break;
+        }
+        case 'pixel': {
+          // 点状像素：整数方块 + 网格对齐，硬边无抗锯齿
+          const g = this.grid || 2;
+          const s = Math.max(g, Math.round(sz / g) * g);
+          const px = Math.floor(this.x / g) * g - (s >> 1);
+          const py = Math.floor(this.y / g) * g - (s >> 1);
+          ctx.fillStyle = this.color;
+          ctx.fillRect(px, py, s, s);
+          // 高速时向后补一个同尺寸的拖尾点（保持颗粒一致）
+          if (Math.hypot(this.vx, this.vy) > 300) {
+            ctx.globalAlpha = a * .5;
+            ctx.fillRect(
+              Math.floor((this.x - this.vx * .014) / g) * g - (s >> 1),
+              Math.floor((this.y - this.vy * .014) / g) * g - (s >> 1),
+              s, s);
+          }
           break;
         }
         case 'ink': {
@@ -259,13 +291,14 @@
   /* ---------- 特效管理器 ---------- */
   const Fx = RB.Fx = {
     list: [],
+    decals: [],               // 地面像素血迹（世界坐标）
     shakeAmt: 0, shakeT: 0, shakeDur: 0,
     shakeX: 0, shakeY: 0,
     flash: 0, flashColor: '#fff',
     hitstop: 0,
     bloodMist: 0,
 
-    clear() { this.list.length = 0; this.shakeAmt = 0; this.shakeX = this.shakeY = 0; this.flash = 0; this.hitstop = 0; this.bloodMist = 0; },
+    clear() { this.list.length = 0; this.decals.length = 0; this.shakeAmt = 0; this.shakeX = this.shakeY = 0; this.flash = 0; this.hitstop = 0; this.bloodMist = 0; },
 
     add(o) { this.list.push(o); return o; },
 
@@ -281,30 +314,74 @@
     },
 
     /* --- 粒子 --- */
+    /**
+     * 受击溅血：大量点状像素血点（默认 2px 网格对齐），落地会留下像素血迹
+     */
     blood(x, y, dirX, amount, power) {
       amount = amount || 12; power = power || 1;
-      for (let i = 0; i < amount; i++) {
-        const a = U.rand(-1.35, .55) * (dirX < 0 ? -1 : 1) + (dirX < 0 ? Math.PI : 0);
-        const sp = U.rand(180, 620) * power;
-        this.add(new Particle(x + U.rand(-8, 8), y + U.rand(-16, 6), {
+      const sgn = dirX < 0 ? -1 : 1;
+      const n = Math.round(amount * 2.8);          // 大量小点
+      const grid = 2;
+      for (let i = 0; i < n; i++) {
+        const far = Math.random() < .32;           // 少量溅得更远的散点
+        const a = U.rand(-1.45, .7) * sgn + (sgn < 0 ? Math.PI : 0);
+        const sp = U.rand(150, 620) * power * (far ? 1.45 : 1);
+        this.add(new Particle(x + U.rand(-10, 10), y + U.rand(-20, 8), {
           vx: Math.cos(a) * sp,
-          vy: Math.sin(a) * sp - U.rand(40, 220) * power,
-          g: 1500, drag: .93,
-          life: U.rand(.42, .95),
-          size: U.rand(3.5, 8) * power, size2: 1,
-          color: Math.random() < .72 ? '#a80d18' : (Math.random() < .5 ? '#6d060e' : '#d81f26'),
-          shape: 'blood', z: 44,
+          vy: Math.sin(a) * sp - U.rand(50, 250) * power,
+          g: 1650, drag: .9,
+          life: U.rand(.3, 1) * (far ? 1.25 : 1),
+          size: DOT, size2: DOT,                   // 所有血点一样大
+          color: bloodDotColor(),
+          shape: 'pixel', grid: grid, splat: true, z: 44,
         }));
       }
-      // 血雾
-      for (let i = 0; i < Math.max(3, amount / 3); i++) {
+      // 少量血雾（保留一点体积感）
+      for (let i = 0; i < Math.max(2, amount / 4); i++) {
         this.add(new Particle(x + U.rand(-14, 14), y + U.rand(-22, 4), {
           vx: U.rand(-70, 70), vy: U.rand(-130, -20), g: -30, drag: .9,
-          life: U.rand(.4, .9), size: U.rand(9, 22), size2: 2,
-          color: 'rgba(150,12,22,.5)', shape: 'dust', alpha: .55, z: 45,
+          life: U.rand(.4, .9), size: U.rand(9, 20), size2: 2,
+          color: 'rgba(226,20,30,.4)', shape: 'dust', alpha: .45, z: 45,
         }));
       }
-      this.bloodMist = Math.min(1.4, this.bloodMist + .16 * power);
+      this.bloodMist = Math.min(1.4, this.bloodMist + .12 * power);
+    },
+
+    /** 地面像素血迹：一簇对齐网格的小方块，缓慢淡出 */
+    groundBlood(x, y, size, color) {
+      const ds = this.decals;
+      if (ds.length > 240) ds.splice(0, ds.length - 240);
+      const g = 2;
+      const s = Math.max(g, Math.round(DOT / g) * g);   // 与溅血点同尺寸
+      const dots = [];
+      const n = U.randInt(3, 6);
+      for (let i = 0; i < n; i++) {
+        const an = Math.random() * 6.2832, r = U.rand(0, s * 2.4);
+        dots.push({
+          ox: Math.round(Math.cos(an) * r / g) * g,
+          oy: Math.round(Math.sin(an) * r * .45 / g) * g,   // 压扁，贴地
+          s,
+        });
+      }
+      const life = U.rand(11, 20);
+      ds.push({
+        x: Math.round(x / g) * g, y: Math.round(y / g) * g,
+        dots, color: color || '#f0141e',
+        alpha: U.rand(.78, .95), life, max: life,
+      });
+    },
+
+    _drawDecals(ctx) {
+      const ds = this.decals;
+      if (!ds.length) return;
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-over';
+      for (const d of ds) {
+        ctx.globalAlpha = d.alpha * U.clamp(d.life / 1.6, 0, 1);
+        ctx.fillStyle = d.color;
+        for (const p of d.dots) ctx.fillRect(d.x + p.ox - (p.s >> 1), d.y + p.oy - (p.s >> 1), p.s, p.s);
+      }
+      ctx.restore();
     },
 
     ink(x, y, amount, spread, size) {
@@ -398,6 +475,12 @@
         e.update(dt);
         if (e.dead) list.splice(i, 1);
       }
+      // 地面血迹缓慢淡出
+      const ds = this.decals;
+      for (let i = ds.length - 1; i >= 0; i--) {
+        ds[i].life -= dt;
+        if (ds[i].life <= 0) ds.splice(i, 1);
+      }
       // 震屏衰减
       if (this.shakeT > 0) {
         this.shakeT -= dt;
@@ -413,12 +496,14 @@
 
     /** 按 z 排序绘制 */
     draw(ctx) {
+      this._drawDecals(ctx);
       this.list.sort((a, b) => (a.z || 0) - (b.z || 0));
       for (const e of this.list) e.draw(ctx);
     },
 
     /** 只绘制 z < 0 的（角色身后的层） */
     drawBack(ctx) {
+      this._drawDecals(ctx);
       for (const e of this.list) if ((e.z || 0) < 0) e.draw(ctx);
     },
     drawFront(ctx) {

@@ -432,6 +432,8 @@
       this.combo = 0; this.chain = 0;
       this.buffer = {};
       RB.Post.chroma = .8;
+      // 主角被击中同样要溅血
+      super.onHurt(atk, dmg, fromBehind, dir);
     }
     _hurtState(dt) {
       this.vx = U.approach(this.vx, 0, (this.onGround ? 1800 : 500) * dt);
