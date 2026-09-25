@@ -195,6 +195,7 @@
       this._applyLunge(dt);
       this.physics(dt);
       this._bounds(world);
+      this._blockedByBodies(world);
       this._emitGhost(dt);
     }
 
@@ -202,6 +203,35 @@
       const lo = world.bounds ? world.bounds[0] : 60;
       const hi = world.bounds ? world.bounds[1] : 20000;
       this.x = U.clamp(this.x, lo, hi);
+    }
+
+    /**
+     * 身体碰撞：被敌人身体挡住，攻击突进 / 位移不会穿到敌人背后
+     * （否则连打时位移会越过敌人，后续攻击全部打空）
+     */
+    _blockedByBodies(world) {
+      const list = world && world.enemies;
+      if (!list || !list.length) return;
+      // 想让冲刺（Shift）能穿过敌人身体时，取消下面一行的注释：
+      // if (this.state === 'dash') return;
+      for (const e of list) {
+        if (!e || e.dead || e.remove || e.spawnT > 0) continue;
+        const pb = this.hurtbox();
+        const eb = e.hurtbox();
+        // 垂直方向没有交叠就不挡（跳到头顶、或敌人被挑空时可以通过）
+        if (pb.y + pb.h <= eb.y || pb.y >= eb.y + eb.h) continue;
+        const pushL = (pb.x + pb.w) - eb.x;   // 在敌人左侧 → 往左推出
+        const pushR = (eb.x + eb.w) - pb.x;   // 在敌人右侧 → 往右推出
+        if (pushL <= 0 || pushR <= 0) continue;
+        if (pushL < pushR) {
+          this.x -= pushL;
+          if (this.vx > 0) this.vx = 0;
+        } else {
+          this.x += pushR;
+          if (this.vx < 0) this.vx = 0;
+        }
+      }
+      this._bounds(world);   // 被顶到关卡边界外时兜底夹回来
     }
 
     /* ---------------- 状态分发 ---------------- */
