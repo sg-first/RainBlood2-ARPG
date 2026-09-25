@@ -5,16 +5,26 @@
   'use strict';
   const U = RB.U, Fx = RB.Fx, Snd = RB.Audio, C = RB.CFG;
 
-  /* 敌人档案 */
+  /* 敌人档案
+     攻击动画（atkAnim）：素材统一取自 assets/fx 下的动作条
+     （一条 = 角色动作帧 + 挥击特效帧一体的序列，5 列 × N 行）：
+       sheet       动作条 key
+       from / to   角色动作帧范围（作为敌人本体动画播放，from 默认 0）
+       fps         本体动画帧率
+       fxFrom/fxTo 命中瞬间叠加播放的“纯特效”帧范围（省略则不叠加；含角色的帧不要放进来，会与本体叠影）
+     动作条缺失时回退到 sheets.idle（chara 立绘）和 atkFps，此时用 fxScale 缩放兜底刀光。
+     注意：chara 目录下的 *_attackone.png 是「受击」动画（不是攻击），已挂到 sheets.hurt 上。 */
   const TYPES = {
     tiegui: {
       label: '铁鬼', hp: 120, speed: 118, scale: 2.25, hurtH: 214,
       range: 132, dmg: 20, windup: .62, active: .12, recover: .58, cd: .55,
       body: 118, kbRes: .62, mpGain: 7,
       hit: { w: 150, h: 150, ox: 76, oy: 96 },
-      sheets: { idle: 'tiegui_idle', atk: 'tiegui_atk', miss: 'tiegui_miss' },
+      sheets: { idle: 'tiegui_idle', hurt: 'tiegui_atk', miss: 'tiegui_miss' },
       idleFps: 5, atkFps: 15,
-      fx: 'e_tieguizhenlie', fxDelay: .58, fxScale: 1.5,
+      // 25 帧之后仍是同一条里的角色跪地帧，不再叠加（避免与本体叠影）
+      atkAnim: { sheet: 'e_tieguizhenlie', to: 24, fps: 18 },
+      fxScale: 1.5,
       shadow: 1.35,
     },
     shanzei: {
@@ -22,9 +32,11 @@
       range: 122, dmg: 13, windup: .42, active: .1, recover: .34, cd: .38,
       body: 96, kbRes: .95, mpGain: 6,
       hit: { w: 122, h: 132, ox: 62, oy: 88 },
-      sheets: { idle: 'shanzei1_idle', atk: 'shanzei1_atk', miss: 'shanzei1_miss' },
+      sheets: { idle: 'shanzei1_idle', hurt: 'shanzei1_atk', miss: 'shanzei1_miss' },
       idleFps: 6, atkFps: 17,
-      fx: 'e_shanzeiaction', fxDelay: .38, fxScale: 1.35,
+      // 该条只有 0~6 帧有内容，7~9 为空帧（避免战斗中“消失”）
+      atkAnim: { sheet: 'e_shanzeiaction', to: 6, fps: 8 },
+      fxScale: 1.35,
       shadow: .95,
     },
     shanzei2: {
@@ -32,9 +44,10 @@
       range: 132, dmg: 15, windup: .48, active: .11, recover: .4, cd: .42,
       body: 104, kbRes: .86, mpGain: 6,
       hit: { w: 132, h: 140, ox: 66, oy: 92 },
-      sheets: { idle: 'shanzei2_idle', atk: 'shanzei2_atk', miss: 'shanzei2_miss' },
+      sheets: { idle: 'shanzei2_idle', hurt: 'shanzei2_atk', miss: 'shanzei2_miss' },
       idleFps: 6, atkFps: 16,
-      fx: 'e_shanzeiaction2', fxDelay: .4, fxScale: 1.4,
+      atkAnim: { sheet: 'e_shanzeiaction2', to: 6, fps: 7, fxFrom: 7, fxTo: 9 },
+      fxScale: 1.4,
       shadow: 1.0,
     },
     muxiaokui: {
@@ -42,9 +55,11 @@
       range: 196, dmg: 16, windup: .56, active: .13, recover: .46, cd: .5,
       body: 100, kbRes: .7, mpGain: 7,
       hit: { w: 210, h: 128, ox: 116, oy: 96 },
-      sheets: { idle: 'muxiaokui_idle', atk: 'muxiaokui_atk', miss: 'muxiaokui_miss' },
+      sheets: { idle: 'muxiaokui_idle', hurt: 'muxiaokui_atk', miss: 'muxiaokui_miss' },
       idleFps: 5.5, atkFps: 15,
-      fx: 'e_muxiaokuiaction', fxDelay: .52, fxScale: 1.5,
+      // 该条 8 帧起夹着大量近空帧与纯特效帧（45 帧起还是全黑底），只取 0~7 的角色动作
+      atkAnim: { sheet: 'e_muxiaokuiaction', to: 7, fps: 7 },
+      fxScale: 1.5,
       shadow: 1.15,
     },
     yingmei: {
@@ -52,9 +67,10 @@
       range: 118, dmg: 14, windup: .34, active: .09, recover: .3, cd: .34,
       body: 88, kbRes: 1.0, mpGain: 6,
       hit: { w: 128, h: 130, ox: 62, oy: 84 },
-      sheets: { idle: 'yingmei_idle', atk: 'yingmei_atk', miss: 'yingmei_miss' },
+      sheets: { idle: 'yingmei_idle', hurt: 'yingmei_atk', miss: 'yingmei_miss' },
       idleFps: 7, atkFps: 20,
-      fx: 'e_yingmeiaction', fxDelay: .3, fxScale: 1.35,
+      atkAnim: { sheet: 'e_yingmeiaction', to: 14, fps: 18 },
+      fxScale: 1.35,
       shadow: .62, dash: true,
     },
     slashguichai: {
@@ -62,9 +78,11 @@
       range: 218, dmg: 26, windup: .72, active: .15, recover: .66, cd: .7,
       body: 160, kbRes: .5, mpGain: 10,
       hit: { w: 246, h: 200, ox: 128, oy: 130 },
-      sheets: { idle: 'slashguichai_idle', atk: 'slashguichai_atk', miss: 'slashguichai_miss' },
+      sheets: { idle: 'slashguichai_idle', hurt: 'slashguichai_atk', miss: 'slashguichai_miss' },
       idleFps: 4.6, atkFps: 13,
-      fx: 'e_slashguichaiaction', fxDelay: .68, fxScale: 2.0,
+      // 只有 5 帧角色动作（慢速重劈），帧率压低 → 挥砍正好落在判定帧上
+      atkAnim: { sheet: 'e_slashguichaiaction', to: 4, fps: 7, fxFrom: 5, fxTo: 8 },
+      fxScale: 2.0,
       shadow: 1.95, elite: true,
     },
     blader: {
@@ -72,9 +90,11 @@
       range: 140, dmg: 17, windup: .5, active: .11, recover: .4, cd: .44,
       body: 112, kbRes: .82, mpGain: 7,
       hit: { w: 148, h: 152, ox: 74, oy: 100 },
-      sheets: { idle: 'blader_idle', atk: 'blader_atk', miss: 'blader_miss' },
+      sheets: { idle: 'blader_idle', hurt: 'blader_atk', miss: 'blader_miss' },
       idleFps: 5.4, atkFps: 15,
-      fx: 'e_bladeraction', fxDelay: .46, fxScale: 1.5,
+      // 0~12 为角色动作（13~15 近空帧，16 帧起又回到角色动作，故不叠加、只取前段）
+      atkAnim: { sheet: 'e_bladeraction', to: 12, fps: 19 },
+      fxScale: 1.5,
       shadow: 1.4,
     },
     baijianke: {
@@ -82,9 +102,10 @@
       range: 152, dmg: 15, windup: .4, active: .1, recover: .33, cd: .36,
       body: 96, kbRes: .9, mpGain: 7,
       hit: { w: 168, h: 140, ox: 84, oy: 94 },
-      sheets: { idle: 'baijiankeb_idle', atk: 'baijiankeb_atk', miss: 'baijiankeb_miss' },
+      sheets: { idle: 'baijiankeb_idle', hurt: 'baijiankeb_atk', miss: 'baijiankeb_miss' },
       idleFps: 6.4, atkFps: 18,
-      fx: 'e_baijianke_action', fxDelay: .36, fxScale: 1.4,
+      atkAnim: { sheet: 'e_baijianke_action', to: 7, fps: 10, fxFrom: 10, fxTo: 19 },
+      fxScale: 1.4,
       shadow: .9,
     },
     xingmang: {
@@ -92,9 +113,11 @@
       range: 146, dmg: 16, windup: .38, active: .1, recover: .32, cd: .34,
       body: 98, kbRes: .92, mpGain: 7,
       hit: { w: 156, h: 148, ox: 78, oy: 100 },
-      sheets: { idle: 'xingmang_idle', atk: 'xingmang_atk', miss: 'xingmang_miss' },
+      sheets: { idle: 'xingmang_idle', hurt: 'xingmang_atk', miss: 'xingmang_miss' },
       idleFps: 6.6, atkFps: 18,
-      fx: 'e_xingmang-fangxing-jian', fxDelay: .34, fxScale: 1.5,
+      // 反星刃整条都含角色动作帧；104~119 是“举刃→劈下→收势”的一段完整挥击
+      atkAnim: { sheet: 'e_xingmang-fanxing-ren', from: 104, to: 119, fps: 20 },
+      fxScale: 1.5,
       shadow: .95,
     },
     triyingmei: {
@@ -102,9 +125,10 @@
       range: 126, dmg: 15, windup: .36, active: .1, recover: .32, cd: .36,
       body: 92, kbRes: .98, mpGain: 7,
       hit: { w: 136, h: 136, ox: 64, oy: 84 },
-      sheets: { idle: 'triyingmei_idle', atk: 'triyingmei_atk', miss: 'triyingmei_miss' },
+      sheets: { idle: 'triyingmei_idle', hurt: 'triyingmei_atk', miss: 'triyingmei_miss' },
       idleFps: 7, atkFps: 19,
-      fx: 'e_yingmeiaction', fxDelay: .32, fxScale: 1.35,
+      atkAnim: { sheet: 'e_yingmeiaction', to: 14, fps: 17 },
+      fxScale: 1.35,
       shadow: .66, dash: true,
     },
     zuoshang: {
@@ -112,9 +136,11 @@
       range: 168, dmg: 21, windup: .58, active: .12, recover: .5, cd: .55,
       body: 120, kbRes: .66, mpGain: 9,
       hit: { w: 184, h: 170, ox: 92, oy: 116 },
-      sheets: { idle: 'zuoshang_idle', atk: 'zuoshang_atk', miss: 'zuoshang_miss' },
+      sheets: { idle: 'zuoshang_idle', hurt: 'zuoshang_atk', miss: 'zuoshang_miss' },
       idleFps: 5, atkFps: 14,
-      fx: 'e_e_shangskill2', fxDelay: .54, fxScale: 1.7,
+      // 拔刀 5 帧 + 整条金色斩击特效帧
+      atkAnim: { sheet: 'e_shanggongji', to: 4, fps: 8, fxFrom: 5, fxTo: 34 },
+      fxScale: 1.7,
       shadow: 1.45, elite: true,
     },
     zangwudi: {
@@ -122,9 +148,12 @@
       range: 250, dmg: 30, windup: .78, active: .16, recover: .62, cd: .5,
       body: 230, kbRes: .12, mpGain: 14,
       hit: { w: 300, h: 320, ox: 148, oy: 175 },
-      sheets: { idle: 'zangwudi_idle', atk: 'zangwudi_skill', miss: 'zangwudi_miss' },
+      // 原 atk 指向的 zangwudi_skill 在 manifest 里不存在，改用基础形态的受击图
+      sheets: { idle: 'zangwudi_idle', hurt: 'zangwudi_atk', miss: 'zangwudi_miss' },
       idleFps: 4.2, atkFps: 12,
-      fx: 'e_zangwudiaction', fxDelay: .72, fxScale: 2.8,
+      // 29 帧之后是大片全黑底特效帧，特效只取 29~34
+      atkAnim: { sheet: 'e_zangwudiaction', to: 28, fps: 19, fxFrom: 29, fxTo: 34 },
+      fxScale: 2.8,
       shadow: 2.9, boss: true,
     },
   };
@@ -169,12 +198,39 @@
       const S = this.T.sheets;
       this.clip('idle', S.idle, [0, 1, 2, 3], this.T.idleFps, { loop: true });
       this.clip('walk', S.idle, [0, 1, 2, 3], this.T.idleFps * .8, { loop: true });
-      this.clip('atk', S.atk, [0, 1, 2, 3], this.T.atkFps, { loop: false, hold: 1 });
+      this._buildAtkClip();
       this.clip('windup', S.idle, [0, 1, 0, 1], 9, { loop: true });
-      this.clip('hurt', S.miss || S.idle, [0, 1, 2, 3], 14, { loop: false });
-      this.clip('stagger', S.miss || S.idle, [0, 1, 2, 3], 12, { loop: false });
+      // 受击（*_attackone.png）与硬直
+      const hurtSheet = S.hurt || S.miss || S.idle;
+      this.clip('hurt', hurtSheet, [0, 1, 2, 3], 14, { loop: false });
+      this.clip('stagger', hurtSheet, [0, 1, 2, 3], 12, { loop: false });
       // 敌人素材（c_* 系列）均为朝右绘制：显式声明基线朝向
       for (const k in this.clips) this.clips[k].baseFace = 1;
+    }
+
+    /**
+     * 攻击动画：优先使用 assets/fx 下的动作条（角色动作 + 挥击特效一体的序列）。
+     * 只取 atkAnim.to 之前的角色动作帧作为敌人本体动画，其余特效帧留到命中瞬间叠加播放。
+     * @param speedMul 帧率倍率（BOSS 狂暴时加速）
+     */
+    _buildAtkClip(speedMul) {
+      const A = this.T.atkAnim, mul = speedMul || 1;
+      const sheet = A && A.to !== undefined ? RB.Assets.sheet(A.sheet) : null;
+      if (!sheet) {
+        // 动作条缺失 → 回退到待机立绘（*_attackone 是受击图，不能当攻击用）
+        this.clip('atk', this.T.sheets.idle, [0, 1, 2, 3], this.T.atkFps * mul, { loop: false, hold: 1 });
+        this._atkFx = null;
+        return;
+      }
+      const from = A.from || 0;
+      const body = [];
+      for (let i = from; i <= A.to; i++) body.push(i);
+      this.clip('atk', A.sheet, body, A.fps * mul, { loop: false, hold: 1 });
+      if (A.fxFrom === undefined) { this._atkFx = null; return; }
+      const fx = [];
+      const last = A.fxTo === undefined ? sheet.cols * sheet.rows - 1 : A.fxTo;
+      for (let i = A.fxFrom; i <= last; i++) fx.push(i);
+      this._atkFx = { sheet: A.sheet, frames: fx };
     }
 
     /* =================== 更新 =================== */
@@ -196,7 +252,7 @@
         Fx.text(this.x, this.y - 300, '狂 暴', { color: '#ff3020', size: 54, life: 1.6, scalePop: 2 });
         Fx.ring(this.x, this.y - 140, 120, 'rgba(255,40,40,.95)');
         this.T = Object.assign({}, this.T, { speed: this.T.speed * 1.34, windup: this.T.windup * .78, dmg: this.T.dmg * 1.22 });
-        this.clip('atk', this.T.sheets.atk, [0, 1, 2, 3], this.T.atkFps * 1.25, { loop: false, hold: 1 });
+        this._buildAtkClip(1.25);
       }
 
       this._ai(dt, p, world);
@@ -206,6 +262,17 @@
 
     _ai(dt, p, world) {
       if (!p || p.dead) { this.vx = U.approach(this.vx, 0, 900 * dt); this.play('idle'); return; }
+      // 受击硬直：守住受击动画，别被下面 AI 每帧的 idle/walk 顶掉（否则只闪一帧）
+      if (this.state === 'hurt') {
+        this.vx = U.approach(this.vx, 0, 900 * dt);
+        if (this.stateT >= (this.stateDur || .3)) {
+          this.setState('idle');
+          this.play('idle');
+        } else {
+          this.play(this.animDone ? 'idle' : 'hurt');
+          return;
+        }
+      }
       this.aiT += dt;
       const dx = p.x - this.x;
       const adx = Math.abs(dx);
@@ -249,10 +316,9 @@
         case 'windup': {
           this.vx = U.approach(this.vx, 0, 1800 * dt);
           this.face = dirToP;
-          this.play('windup');
+          this.play('atk');            // 动作条自带起手帧：抬手即开始整段攻击动画
           if (this.aiT >= T.windup) {
             this.ai = 'attack'; this.aiT = 0;
-            this.play('atk', true);
             this._fired = false;
             Snd.play(this.T.boss ? 'slashhvy' : 'slash', { vol: .5 });
           }
@@ -268,6 +334,8 @@
             this.ai = 'idle'; this.aiT = 0;
             this.cd = T.cd * U.rand(.85, 1.3) / (this.enraged ? 1.5 : 1);
             this.vx = 0;
+          } else if (this.animDone) {
+            this.play('idle');         // 动作条播完 → 收回待机姿态，避免僵在最后一帧
           }
           break;
         }
@@ -278,13 +346,13 @@
           break;
         }
       }
-      if (this.boss) this._bossExtra(dt, p, world);
+      if (this.boss && this.state !== 'hurt') this._bossExtra(dt, p, world);
     }
 
     _startWindup() {
       this.ai = 'windup'; this.aiT = 0;
       const T = this.T;
-      this.play('windup', true);
+      this.play('atk', true);            // 攻击动作条从第 0 帧起播（含起手前摇）
       // 预警红光
       this.tintColor = 'brightness(1.35) sepia(1) saturate(6) hue-rotate(-28deg)';
       this.tintT = T.windup + .1;
@@ -305,10 +373,11 @@
         hitstop: 4, shake: this.boss ? 10 : 5, stun: .42,
         life: .14, pierce: true, type: 'enemy',
       });
-      // 挥击特效
-      if (T.fx && RB.Assets.sheet('e_' + T.fx.replace(/^e_/, ''))) {
-        Fx.add(new RB.SpriteFx(T.fx.replace(/^e_/, ''), this.x + facing * h.ox * .6, this.y - h.oy, {
-          scale: T.fxScale, flip: facing, alpha: .92, z: 54, fps: 24,
+      // 挥击特效：把动作条剩下的纯特效帧在命中瞬间叠加播放。
+      // 特效帧与角色帧同处一张表、共用同一格坐标系，故必须按本体的位置与缩放绘制才能对齐。
+      if (this._atkFx) {
+        Fx.add(new RB.SpriteFx(this._atkFx.sheet, this.x, this.y, {
+          frames: this._atkFx.frames, scale: this.scale, flip: facing, z: 54, fps: 24,
         }));
       } else {
         Fx.add(new RB.SpriteFx('atk_combo', this.x + facing * h.ox * .6, this.y - h.oy, {
@@ -386,8 +455,7 @@
       if (atk.kbY) { this.vy = -atk.kbY * this.kbRes; this.onGround = false; }
       const stun = (atk.stun || .3) * this.kbRes;
       this.setState('hurt', stun);
-      if (this.stateT === 0 || this.state !== 'hurt') this.play('hurt', true);
-      else this.play('hurt', true);
+      this.play('hurt', true);
       this.squashTo(.9, .1);
       // 精英抵抗击退
       if (this.kbRes < .35) this.vx *= .5;
