@@ -13,7 +13,8 @@
     /* 各动作时间轴（秒）
        攻击本体动画取自 assets/fx/soulaction-attack.png（key: atk_combo）：
          帧 0 = 待机姿态，帧 4/5/6 = 三个挥砍姿势；
-         帧 1~3 / 6~8 / 10~11 是刀光弧，留给各段的 slashClip 叠加，故不放进本体帧。
+         帧 1~3 / 7~9 / 10~11 是刀光弧，留给各段的 slashClip 叠加，故不放进本体帧。
+       刀光按本体的位置与缩放绘制（同一格坐标系），弧光才会落在素材里刀的位置。
        帧率决定了「挥砍姿势落在判定帧上」：例如 a1 判定在 .12s，10fps 时第 2 帧(4)正好在 .10s。 */
     A: {
       /* 连段 1：横斩 */
@@ -23,7 +24,7 @@
         lunge: { t0: .10, t1: .22, v: 235 },
         cancel: .22, sfx: 'slash',
         slashClip: ['atk_combo', [1, 2, 3], 30],
-        slash: { ox: 92, oy: 112, scale: 1.5, delay: .10 },
+        slash: { delay: .10 },
       },
       /* 连段 2：撩斩 */
       a2: {
@@ -33,7 +34,7 @@
         cancel: .24, sfx: 'slash',
         // 刀光只取纯弧光帧（第 6 帧含角色，放进来会跟本体叠出幻影）
         slashClip: ['atk_combo', [7, 8, 9], 30],
-        slash: { ox: 96, oy: 124, scale: 1.65, delay: .09, rot: -.4 },
+        slash: { delay: .09, rot: -.4 },
       },
       /* 连段 3：终结斩 */
       a3: {
@@ -42,7 +43,7 @@
         lunge: { t0: .16, t1: .30, v: 320 },
         cancel: .52, sfx: 'slashhvy',
         slashClip: ['atk_combo', [10, 11], 24],
-        slash: { ox: 108, oy: 128, scale: 2.0, delay: .17, rot: .3 },
+        slash: { delay: .17, rot: .3 },
         heavy: true,
       },
       /* 冲刺斩 */
@@ -52,7 +53,7 @@
         lunge: { t0: .06, t1: .26, v: 520 },
         cancel: .3, sfx: 'slashhvy',
         slashClip: ['atk_combo', [1, 2, 3], 32],
-        slash: { ox: 118, oy: 112, scale: 1.85, delay: .07 },
+        slash: { delay: .07 },
       },
       /* 空中斩 */
       aair: {
@@ -60,7 +61,7 @@
         hits: [{ t: .08, w: 170, h: 170, ox: 80, oy: 92, dmg: 17, kb: 200, kbY: -140, hitstop: 6, shake: 5, stun: .4 }],
         cancel: .3, sfx: 'slash',
         slashClip: ['atk_combo', [7, 8, 9], 30],
-        slash: { ox: 84, oy: 104, scale: 1.75, delay: .06, rot: .5 },
+        slash: { delay: .06, rot: .5 },
       },
       /* 上挑（对空） */
       aup: {
@@ -68,7 +69,7 @@
         hits: [{ t: .13, w: 130, h: 230, ox: 66, oy: 170, dmg: 18, kb: 150, kbY: 520, hitstop: 7, shake: 5, stun: .5 }],
         cancel: .38, sfx: 'slashhvy',
         slashClip: ['atk_combo', [7, 8, 9], 26],
-        slash: { ox: 70, oy: 150, scale: 1.8, delay: .11, rot: -1.2 },
+        slash: { delay: .11, rot: -1.2 },
       },
     },
   };
@@ -514,10 +515,9 @@
       if (a.slash && t >= a.slash.delay && !this._slashFired && this.slashClips[this.actName]) {
         this._slashFired = true;
         const clip = this.slashClips[this.actName];
-        const sx = this.x + this.face * a.slash.ox;
-        const sy = this.y - a.slash.oy;
-        Fx.add(new RB.SpriteFx(clip.key, sx, sy, {
-          frames: clip.frames, fps: clip.fps, scale: a.slash.scale,
+        // 刀光与本体取自同一张表、共用同一格坐标系：必须按本体的位置与缩放绘制
+        Fx.add(new RB.SpriteFx(clip.key, this.x, this.y, {
+          frames: clip.frames, fps: clip.fps, scale: this.scale,
           // baseFace:-1 —— soulaction-attack.png 与本体立绘一样是朝左绘制，必须跟本体一起镜像
           flip: this.face, baseFace: -1, blend: 'source-over', alpha: .98, z: 55,
         }));
