@@ -69,11 +69,13 @@
     async boot() {
       this.init();
       const el = this.el;
-      /* 调试 / 演示参数：?auto=1 直接开始，&demo=1 自动战斗，&chapter=2 跳章 */
+      // 调试参数：?auto=1 直接开始，&demo=1 自动战斗，&chapter=3 直达第 3 章
       const q = new URLSearchParams(location.search);
       this.demo = q.has('demo');
       this.autoStart = q.has('auto');
-      const chapterJump = parseInt(q.get('chapter') || '0', 10);
+      // chapter：章节号（1 起，与数字键一致），非法值按第 1 章处理
+      const n = parseInt(q.get('chapter'), 10);
+      this._startChapter = isNaN(n) ? 0 : U.clamp(n - 1, 0, RB.CHAPTERS.length - 1);
 
       const tips = ['研墨中…', '铺陈长卷…', '磨砺刀锋…', '召唤群鬼…', '血已备好…'];
       let ti = 0;
@@ -91,8 +93,7 @@
 
       if (this.autoStart) {
         el.loader.classList.add('hidden');
-        this.startRun();
-        for (let i = 0; i < chapterJump; i++) this._nextChapter();
+        this.startRun();          // startRun 内部会按 _startChapter 跳章
         this.introT = 0;
       } else {
         setTimeout(() => {
@@ -103,22 +104,30 @@
       }
     },
 
-    /** 进入下一章（肃清后抵达尽头 / 调试跳章共用） */
+    /** 直接进入下一章（肃清后抵达尽头） */
     _advanceChapter() {
       const i = this.level.chapterIdx;
       if (i >= RB.CHAPTERS.length - 1) return;
+      this.jumpToChapter(i + 1);
+    },
+
+    /** 直接切换到第 i 章（0 起）。调试快捷键 / URL 参数共用 */
+    jumpToChapter(i) {
+      if (!this.level || !RB.CHAPTERS.length) return;
+      i = U.clamp(i | 0, 0, RB.CHAPTERS.length - 1);
       this.enemies.length = 0;
       Fx.clear();
       Fx.screenFlash(.42, '#e8e4da');
       Snd.play('sting', { vol: 1 });
-      this.level.loadChapter(i + 1);
+      this.level.loadChapter(i);          // 内部会 emit('chapter') → 横幅 + 音效
       const p = this.player;
       p.x = 240; p.y = C.GROUND_Y; p.vx = 0; p.vy = 0;
       p.hp = Math.min(p.maxHp, p.hp + p.maxHp * .25);   // 过章回 25% 血
-      p.state = 'idle'; p.dead = false;
+      p.state = 'idle';
+      p.dead = false;
       this.cam.x = 0;
       this.introT = .4;
-      this.stats.chapter = i + 1;
+      this.stats.chapter = i;
       this._chT = undefined;
     },
 
@@ -152,6 +161,8 @@
       Snd.setIntensity(.2);
       UI.comboShow = 0; UI.marquee = [];
       UI.tip('按 J 挥刀 · Shift 冲刺 · L 格挡', 6);
+      // 调试：URL 指定了起始章节（?chapter=N / ?chapter=id）时直接跳过去
+      if (this._startChapter > 0) this.jumpToChapter(this._startChapter);
       this._syncBanner();
     },
 
