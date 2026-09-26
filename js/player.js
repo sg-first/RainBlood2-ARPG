@@ -217,13 +217,18 @@
     /**
      * 身体碰撞：被敌人身体挡住，攻击突进 / 位移不会穿到敌人背后
      * （否则连打时位移会越过敌人，后续攻击全部打空）
+     *
+     * 冲刺穿透：
+     * 冲刺全程只前进约 120px，而"贴脸"时玩家 hurtbox 与敌人 hurtbox 之间往往还隔着几十像素。
+     * 冲刺结束时若仍嵌在敌人身上，按"最近边"结算会被原路弹回 —— 表现就是穿不过去。
+     * 因此冲刺结束后改为沿冲刺方向推出，保证一定落到敌人另一侧。
      */
     _blockedByBodies(world) {
       const list = world && world.enemies;
-      if (!list || !list.length) return;
+      if (!list || !list.length) { this._dashThrough = false; return; }
+      const dashing = this.state === 'dash';
+      let stuck = false;
 
-      if (this.state === 'dash') return; // 冲刺（Shift）能穿过敌人身体
-      
       for (const e of list) {
         if (!e || e.dead || e.remove || e.spawnT > 0) continue;
         const pb = this.hurtbox();
@@ -232,7 +237,20 @@
         if (pb.y + pb.h <= eb.y || pb.y >= eb.y + eb.h) continue;
         const pushL = (pb.x + pb.w) - eb.x;   // 在敌人左侧 → 往左推出
         const pushR = (eb.x + eb.w) - pb.x;   // 在敌人右侧 → 往右推出
-        if (pushL <= 0 || pushR <= 0) continue;
+        if (pushL <= 0 || pushR <= 0) continue; //未接触敌人
+        stuck = true;
+        // 冲刺穿身：冲刺途中直接放行；冲刺结束后沿冲刺方向弹出
+        if (dashing || this._dashThrough) {
+          if (dashing) continue;
+          if (this._dashDir > 0) {
+            this.x += pushR;
+            if (this.vx < 0) this.vx = 0;
+          } else {
+            this.x -= pushL;
+            if (this.vx > 0) this.vx = 0;
+          }
+          continue;
+        }
         if (pushL < pushR) {
           this.x -= pushL;
           if (this.vx > 0) this.vx = 0;
@@ -241,6 +259,8 @@
           if (this.vx < 0) this.vx = 0;
         }
       }
+      // 完全脱离敌人后结束穿身状态
+      if (!dashing && !stuck) this._dashThrough = false;
       this._bounds(world);   // 被顶到关卡边界外时兜底夹回来
     }
 
@@ -362,10 +382,20 @@
       this.setState('dash', .3);
       this.dashCD = .42;
       this.face = dir;
+      this._dashDir = dir;        // 冲刺方向，供穿身结算使用
+      this._dashThrough = true;   // 冲刺穿身：一直保持到完全脱离敌人
       this.vx = dir * 790;
       this.invuln = Math.max(this.invuln, .16);
       this.play('dash', true);
       this.anim.speed = 1.35;
+      // 穿身判定：一块跟着本体走的判定框，整个冲刺期间有效，穿过的敌人各吃一次
+      // （hitSet 保证同一敌人不会被重复判定；从背后穿过时 takeHit 会自动算背刺 1.5 倍）
+      this.makeHit({
+        w: 76, h: 186, ox: 0, oy: 93,
+        dmg: 15, kb: 300, kbY: 0,
+        hitstop: 5, shake: 4, stun: .3,
+        life: .3, pierce: true, type: 'dash',
+      });
       Snd.play('dash', { vol: .62 });
       Fx.dust(this.x, C.GROUND_Y, 10, -dir);
       Fx.ring(this.x, C.GROUND_Y - 30, 26, 'rgba(220,214,206,.5)');
@@ -742,6 +772,13 @@
       RB.bus.emit('combo', this.combo);
       if (atk.type === 'heavy' || atk.type === 'skill' || atk.type === 'ultra') {
         Fx.ring(target.x, target.y - 110, 30, 'rgba(255,90,80,.8)');
+      }
+      if (atk.type === 'dash') {
+        // 冲刺穿身：伤害数字由 onHurt 统一出，这里补一条与背刺同款的提示文字
+        // （背刺文案在 hy-66，这里叠在 hy-96 避免和它撞在一起）
+        const hy = target.y - target.hurtH * .58 * target.squash;
+        Fx.text(target.x, hy - 96, '贯穿', { color: '#ff4a3a', size: 24, life: .8, vy: -70 });
+        Fx.ring(target.x, target.y - 110, 34, '#ff4a3a');
       }
     }
 
