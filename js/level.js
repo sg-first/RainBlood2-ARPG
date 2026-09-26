@@ -15,10 +15,9 @@
       sub: 'RAIN OVER THE LONG STREET',
       length: 3600,
       layers: [
-        { img: 'bb_mountainnight', par: .10, y: 0, hs: 1.0, alpha: .8, tint: '#1a1a22' },
-        { img: 'mountain3', par: .22, y: 40, hs: .78, alpha: .58, tint: '#22222a' },
+        // { img: 'bb_mountainnight', par: .10, y: 0, hs: 1.0, alpha: 1 },
+        { img: 'mountain3', par: .22, y: 40, hs: .78, alpha: 1 },
         { img: 'city_night', par: .48, y: 176, hs: .66, alpha: .95 },
-        { img: 'city3_day', par: .74, y: 300, hs: .46, alpha: .5, tint: '#14141a' },
       ],
       ground: { c1: '#101014', c2: '#050508', line: 'rgba(150,20,26,.5)' },
       waves: [
@@ -33,10 +32,8 @@
       sub: 'THE BLOOD TUNNEL',
       length: 4200,
       layers: [
-        { img: 'bb_tombroad', par: .08, y: -20, hs: 1.05, alpha: .62, tint: '#171420' },
-        { img: 'deep2', par: .2, y: 30, hs: .8, alpha: .5, tint: '#1a1622' },
-        { img: 'guichairoad', par: .42, y: 128, hs: .8, alpha: .8 },
-        { img: 'tombroad2', par: .7, y: 300, hs: .5, alpha: .62, tint: '#100c16' },
+        { img: 'bb_tombroad', par: .08, y: 100, hs: 1, alpha: 1 },
+        { img: 'tombroad2', par: .7, y: 100, hs: 1, alpha: 1 },
       ],
       ground: { c1: '#120e18', c2: '#06040a', line: 'rgba(180,30,36,.55)' },
       waves: [
