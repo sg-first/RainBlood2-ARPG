@@ -107,7 +107,8 @@
 
     _buildClips() {
       const A = HERO.A;
-      const R = RB.AnimUtil.seq;      // seq(from, to) -> 帧索引数组
+      // AnimUtil.seq 的签名是 seq(cols, from, to)，技能动作条均为 5 列
+      const R = (from, to) => RB.AnimUtil.seq(5, from, to);
       // 基础
       this.clip('idle', 'hero_idle', [0, 1, 2, 3], 5.5, { loop: true });
       // 行走图：RPG Maker 标准布局 row0=正面 row1=朝左 row2=朝右 row3=背面
@@ -133,10 +134,13 @@
         const a = A[k];
         this.clip(k, a.clip[0], a.clip[1], a.clip[2], { loop: false, hold: 1 });
       }
-      // 技能演出序列（角色+特效一体）—— 帧范围已剔除尾部空白帧
-      this.clip('skill_hideslash', 'skill_hideslash', R(0, 32), 26, { loop: false });
+      // 技能演出序列（角色+特效一体）。帧范围按逐格像素扫描裁定：
+      //   居合 0~28 为角色帧；29~32 是纯特效（30 悬空、31 只占上半格、32 是整块纯色矩形），33~34 全空
+      //   —— 放进本体帧会让结尾角色消失、并僵在白块上
+      //   奥义 0~51 为含角色的演出帧；52~55 悬空、56~59 全空
+      this.clip('skill_hideslash', 'skill_hideslash', R(0, 28), 26, { loop: false });
       this.clip('skill_powerslash', 'skill_powerslash', R(0, 53), 26, { loop: false });
-      this.clip('skill_omnislash', 'skill_omnislash', R(0, 59), 30, { loop: false });
+      this.clip('skill_omnislash', 'skill_omnislash', R(0, 51), 30, { loop: false });
       this.clip('skill_draw', 'atk_draw', R(0, 7), 22, { loop: false });
       this.clip('skill_twilight', 'skill_twilight', [0, 1, 2, 3, 4, 5, 6, 7, 9], 20, { loop: false });
       // 刀光（只取纯特效帧）
@@ -565,9 +569,9 @@
     _skillState(dt, inp) {
       const t = this.stateT;
       this.vx = U.approach(this.vx, 0, 3000 * dt);
-      // 序列时间轴（soul-hideslash 共 35 帧 @26fps ≈ 1.35s）
-      // 判定窗口：拔刀斩出的一瞬（约 0.95s ~ 1.12s）
-      if (!this._skillHit && t >= .92 && t <= 1.12) {
+      // 序列时间轴（soul-hideslash 本体帧 0~28 @26fps ≈ 1.12s，之后保持收刀姿势到 1.35s）
+      // 判定窗口：对齐动作条里的拔刀斩（帧 6~10 ≈ 0.23~0.42s，弧光峰值在帧 8 ≈ 0.31s）
+      if (!this._skillHit && t >= .31 && t <= .5) {
         this._skillHit = true;
         // 大范围斩击
         this.makeHit({
