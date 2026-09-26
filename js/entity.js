@@ -269,10 +269,17 @@
     /* ---------- 受击 ---------- */
     takeHit(atk, o) {
       o = o || {};
-      const fromBehind = U.sign(atk.owner.x - this.x) === this.face;
+      // 背刺判定：攻击者必须位于目标的"背面"一侧。
+      // 1) 符号是 -face：face 是正面朝向，背面在反方向。
+      // 2) 另外要求真正越过目标身体半个身宽：只比中心点的话，两者重叠时（冲刺穿身、贴身）几像素的位移就会让 sign 乱跳。
+      // 3) 不过因为敌人一直朝向玩家，所以这个基本触发不了
+      const dx = atk.owner.x - this.x;
+      const fromBehind = U.sign(dx) === -this.face && Math.abs(dx) > this.hurtW * .5 + 6;
+
       let dmg = atk.dmg;
       if (fromBehind) dmg *= 1.5;
-      if (atk.crit) dmg *= 1.35;
+      if (atk.type === 'dash') dmg *= 1.5;   // 冲刺穿身（贯穿）加成，与背刺叠乘
+      if (atk.crit) dmg *= 1.35; // 技能伤害加成
       dmg = Math.round(dmg);
       this.hp -= dmg;
       this.hpBarT = 3;
