@@ -7,6 +7,14 @@
 
   /* ============ 章节定义 ============
      每章：背景层 + 波次序列 + 世界长度
+     背景层字段：
+       img   资源 key（见 assets/manifest.json，非文件名）
+       par   视差系数（越大越靠前、跟相机跑得越快）
+       x     静态横向偏移（决定初始露出图内哪一段，默认 0）
+       y     纵向绘制起点（屏幕坐标）
+       hs    绘制高度 = 画布高 × hs
+       alpha 不透明度（默认 1）
+       tint  染色色值；有值时会先压暗再以 multiply 叠加该色
   */
   const CHAPTERS = [
     {
@@ -48,10 +56,8 @@
       sub: 'STARLIGHT ON THE BROKEN BRIDGE',
       length: 3800,
       layers: [
-        { img: 'bb_bridge', par: .07, y: -10, hs: 1.02, alpha: .55, tint: '#1c1a24' },
-        { img: 'lastbridge1', par: .26, y: 160, hs: .62, alpha: .92 },
-        { img: 'gate', par: .5, y: 190, hs: .5, alpha: .5, tint: '#18161e' },
-        { img: 'rift', par: .78, y: 330, hs: .44, alpha: .45, tint: '#0e0c14' },
+        { img: 'bb_bridge', par: .07, y: 0, hs: 1.02, alpha: 1 },
+        { img: 'lastbridge1', par: .6, x:-750, y: 140, hs: 1, alpha: 1, tint: '#656369ff'  },
       ],
       ground: { c1: '#0e1016', c2: '#04050a', line: 'rgba(160,26,32,.5)' },
       waves: [
@@ -80,6 +86,38 @@
 
   /* 过滤掉不存在的敌人类型 */
   function validType(t) { return !!RB.ENEMY_TYPES[t]; }
+
+  /* ---------- 图层染色缓存 ----------
+     原来是在主画布上直接 multiply 一层色块：图片透明处会被色块填满，
+     而且还会连带染到它下面的图层。改为在离屏画布里先染色，再用
+     destination-in 裁回原图 alpha，透明区域保持完全透明。
+     结果按图层缓存，避免每帧重建。
+  */
+  const TINT_ALPHA = .78;   // 染色叠加强度（沿用原逻辑）
+
+  function tintedLayer(L, img, w, h) {
+    const key = L.tint + '|' + Math.round(w) + 'x' + Math.round(h);
+    if (L._tintCv && L._tintKey === key) return L._tintCv;
+    const cv = document.createElement('canvas');
+    cv.width = Math.max(1, Math.ceil(w));
+    cv.height = Math.max(1, Math.ceil(h));
+    const c = cv.getContext('2d');
+    // 1) 压暗提对比后画原图
+    c.filter = 'brightness(.7) contrast(1.06)';
+    c.drawImage(img, 0, 0, cv.width, cv.height);
+    c.filter = 'none';
+    // 2) multiply 叠染色
+    c.globalCompositeOperation = 'multiply';
+    c.globalAlpha = TINT_ALPHA;
+    c.fillStyle = L.tint;
+    c.fillRect(0, 0, cv.width, cv.height);
+    // 3) 用原图 alpha 反向裁剪：透明处重新变回透明
+    c.globalCompositeOperation = 'destination-in';
+    c.globalAlpha = 1;
+    c.drawImage(img, 0, 0, cv.width, cv.height);
+    L._tintCv = cv; L._tintKey = key;
+    return cv;
+  }
 
   class Level {
     constructor() {
@@ -205,22 +243,14 @@
         const s = (H * L.hs) / img.height;
         const w = img.width * s, h = img.height * s;
         const y = L.y;
-        // 视差偏移
-        let ox = -(camX * L.par) % w;
+        // 视差偏移；x 为该层的静态横向偏移（决定初始露出图内哪一段）
+        let ox = ((L.x || 0) - camX * L.par) % w;
         if (ox > 0) ox -= w;
+        const src = L.tint ? tintedLayer(L, img, w, h) : img;
         ctx.save();
         ctx.globalAlpha = L.alpha === undefined ? 1 : L.alpha;
-        if (L.tint) {
-          ctx.filter = 'brightness(.7) contrast(1.06)';
-        }
         for (let x = ox; x < W; x += w) {
-          ctx.drawImage(img, x, y, w, h);
-        }
-        if (L.tint) {
-          ctx.globalCompositeOperation = 'multiply';
-          ctx.globalAlpha = (L.alpha === undefined ? 1 : L.alpha) * .78;
-          ctx.fillStyle = L.tint;
-          for (let x = ox; x < W; x += w) ctx.fillRect(x, y, w, h);
+          ctx.drawImage(src, x, y, w, h);
         }
         ctx.restore();
       }
