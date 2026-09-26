@@ -380,11 +380,14 @@
     /* ---------------- 冲刺 ---------------- */
     _startDash(dir) {
       this.setState('dash', .3);
-      this.dashCD = .42;
+      this.dashCD = .6;
       this.face = dir;
       this._dashDir = dir;        // 冲刺方向，供穿身结算使用
       this._dashThrough = true;   // 冲刺穿身：一直保持到完全脱离敌人
-      this.vx = dir * 790;
+      // 冲刺位移 ≈ 0.3 × 初速 − 114（0.3s 内以 2400/s² 减速，见 _dashState）
+      // 790 → 约 123px（刚够穿过敌人就停，贯穿不够爽）；1050 → 约 200px，穿过去还能再窜一截
+      // 想更长/更短只改这个初速即可，每 +100 初速约 +30px
+      this.vx = dir * 1050;
       this.invuln = Math.max(this.invuln, .16);
       this.play('dash', true);
       this.anim.speed = 1.35;
