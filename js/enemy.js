@@ -144,7 +144,7 @@
       shadow: 1.45, elite: true,
     },
     zangwudi: {
-      label: '葬 无 敌', hp: 900, speed: 152, scale: 3.0, hurtH: 330,
+      label: '葬 无 地', hp: 900, speed: 152, scale: 3.0, hurtH: 330,
       range: 250, dmg: 30, windup: .78, active: .16, recover: .62, cd: .5,
       body: 230, kbRes: .12, mpGain: 14,
       hit: { w: 300, h: 320, ox: 148, oy: 175 },

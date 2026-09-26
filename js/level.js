@@ -68,14 +68,14 @@
     },
     {
       id: 'boss',
-      title: '终章 · 葬 无 敌',
+      title: '终章 · 葬 无 地',
       sub: 'THE FINAL REQUIEM',
       length: 1800,
       layers: [
-        { img: 'bb_secretroad', par: .06, y: -20, hs: 1.1, alpha: .5, tint: '#120c14' },
-        { img: 'deep1', par: .24, y: 90, hs: .62, alpha: .7, tint: '#1a121c' },
-        { img: 'rift', par: .55, y: 200, hs: .6, alpha: .8 },
-        { img: 'waterduct5', par: .8, y: 340, hs: .42, alpha: .4, tint: '#08060c' },
+        // 远：雾隐墓园 —— 石栏、巨冢、雾林，血月悬于其上
+        { img: 'bb_forest', par: .06, y: -20, hs: 1.05, alpha: 1 },
+        // 近：玄墓剑冢围垣 —— 矛戟旗幡，墙脚落在地面线上
+        { img: 'qingsong', par: .72, y: 360, hs: .327, alpha: 1 },
       ],
       ground: { c1: '#0c0810', c2: '#030206', line: 'rgba(200,26,32,.62)' },
       waves: [
