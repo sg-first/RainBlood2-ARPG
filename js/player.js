@@ -114,6 +114,10 @@
       // 行走图：RPG Maker 标准布局 row0=正面 row1=朝左 row2=朝右 row3=背面
       // 基础精灵必须朝右（face=1 时不翻转），朝左靠镜像
       this.clip('run', 'hero_walk', RB.AnimUtil.row(8, 2, 8), 15, { loop: true });
+      // 冲刺：取自 assets/fx/soulaction-focusslash.png 第 34~37 格（前冲+红刃残影的一小段）。
+      // 该动作条素材朝左（baseFace 默认 -1），与冲刺方向由 spriteFlip 自动镜像。
+      // 4 帧 @10fps = 0.4s，配合 _dashState 的 anim.speed≈1.35 正好铺满 0.3s 的冲刺状态。
+      this.clip('dash', 'skill_focusslash', [34, 35, 36, 37], 10, { loop: false });
       this.clip('runSlow', 'hero_walk', RB.AnimUtil.row(8, 2, 4), 8, { loop: true });
       this.clip('stand', 'hero_walk2', RB.AnimUtil.row(8, 2, 4), 5, { loop: true });
       this.clip('guard', 'hero_guard', [0, 1, 2, 3], 7, { loop: true });
@@ -217,8 +221,9 @@
     _blockedByBodies(world) {
       const list = world && world.enemies;
       if (!list || !list.length) return;
-      // 想让冲刺（Shift）能穿过敌人身体时，取消下面一行的注释：
-      // if (this.state === 'dash') return;
+
+      if (this.state === 'dash') return; // 冲刺（Shift）能穿过敌人身体
+      
       for (const e of list) {
         if (!e || e.dead || e.remove || e.spawnT > 0) continue;
         const pb = this.hurtbox();
@@ -359,8 +364,8 @@
       this.face = dir;
       this.vx = dir * 790;
       this.invuln = Math.max(this.invuln, .16);
-      this.play('run', true);
-      this.anim.speed = 1.4;
+      this.play('dash', true);
+      this.anim.speed = 1.35;
       Snd.play('dash', { vol: .62 });
       Fx.dust(this.x, C.GROUND_Y, 10, -dir);
       Fx.ring(this.x, C.GROUND_Y - 30, 26, 'rgba(220,214,206,.5)');
