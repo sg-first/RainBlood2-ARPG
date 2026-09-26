@@ -77,13 +77,14 @@
 
       const tips = ['研墨中…', '铺陈长卷…', '磨砺刀锋…', '召唤群鬼…', '血已备好…'];
       let ti = 0;
-      await RB.Assets.init();
-      await RB.Assets.load((done, total) => {
-        const r = done / total;
+      const progress = r => {
         el.loadBar.style.width = (r * 100).toFixed(1) + '%';
         const nt = Math.min(tips.length - 1, Math.floor(r * tips.length));
         if (nt !== ti) { ti = nt; el.loadTip.textContent = tips[ti]; }
-      });
+      };
+      await RB.Assets.init();
+      await RB.Assets.load((done, total) => progress(done / total * .7));
+      await RB.Audio.load((done, total) => progress(.7 + done / total * .3));
       el.loadTip.textContent = '准备就绪';
       this.loop = new RB.Loop(60, dt => this.update(dt), () => this.render());
       this.loop.start();
@@ -109,7 +110,7 @@
       this.enemies.length = 0;
       Fx.clear();
       Fx.screenFlash(.42, '#e8e4da');
-      Snd.play('tong', { vol: 1 });
+      Snd.play('sting', { vol: 1 });
       this.level.loadChapter(i + 1);
       const p = this.player;
       p.x = 240; p.y = C.GROUND_Y; p.vx = 0; p.vy = 0;
@@ -211,7 +212,7 @@
       });
       RB.bus.on('wave', d => UI.onWave(d));
       RB.bus.on('waveClear', i => { this._waveClearT = 1.2; });
-      RB.bus.on('chapter', () => { this._syncBanner(); Snd.play('tong', { vol: .8 }); });
+      RB.bus.on('chapter', () => { this._syncBanner(); Snd.play('sting', { vol: .8 }); });
       RB.bus.on('parry', () => { this.stats.parries++; UI.push('· 弹反！', '#9fd8ff'); });
       RB.bus.on('ultra', () => { this.stats.ultras++; UI.push('· 奥义 十方俱灭', '#ffd764'); });
       RB.bus.on('skill', () => { UI.push('· 拔刀术 居合', '#ffb0b0'); });
