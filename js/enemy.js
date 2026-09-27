@@ -455,6 +455,10 @@
       this.world = world;
       this.baseUpdate(dt);
       if (this.spawnT > 0) this.spawnT -= dt;
+      // 出场错峰：level.js 按「同波内的出场序号 × .55」赋初值（0 / .55 / 1.1 / 1.65…），
+      // 倒计时归零后该敌人才被允许从 idle 进 chase。漏掉这一步 → 除第一个外全体永久卡 idle。
+      if (this.slotT > 0) this.slotT -= dt;
+      
       if (this.staggerT > 0) this.staggerT -= dt;
       for (let i = 0; i < this._atkCd.length; i++) if (this._atkCd[i] > 0) this._atkCd[i] -= dt;
       const p = world.player;
