@@ -64,10 +64,31 @@
       hit: { w: 150, h: 150, ox: 76, oy: 96 },
       sheets: { idle: 'tiegui_idle', hurt: 'tiegui_atk', miss: 'tiegui_miss' },
       idleFps: 5, atkFps: 15,
-      // 25 帧之后仍是同一条里的角色跪地帧，不再叠加（避免与本体叠影）
-      atkAnim: { sheet: 'e_tieguizhenlie', to: 24, fps: 18 },
       fxScale: 1.5,
       shadow: 1.35,
+      attacks: [
+        { // 普攻·铁掌：8 帧按 fps 8 慢放正好铺满原有的 .62/.12/.58 节奏，判定落在推掌最伸展的 49 帧前后
+          id: 'atk', weight: 4,
+          anim: { sheet: 'e_tieguishuanghong', from: 45, to: 52, fps: 8 },
+          dmg: 20, windup: .62, active: .12, recover: .58, cd: .55,
+          maxRange: 132, standRange: 113,
+          hits: [{ at: .04, arc: false, kb: 420, hitstop: 5, shake: 6, stun: .42 }],
+          fx: [{ at: .06, sheet: 'e_tieguishuanghong', frames: [53], fps: 14, scale: 1.3, offX: 104, offY: 88 }],
+          sfx: [{ at: .04, key: 'hitbig', vol: .45 }],
+        },
+        { // 震裂：蓄力→砸地→上勾。画面上确实是两个独立动作，故配两段判定（不是一段连击拆两刀）
+          id: 'zhenlie', label: '震 裂',
+          anim: { sheet: 'e_tieguizhenlie', from: 0, to: 24, fps: 21 },
+          hit: { w: 176, h: 168, ox: 92, oy: 104 },
+          dmg: 13, windup: .52, active: .22, recover: .42, cd: 1.6,
+          maxRange: 150, standRange: 128, weight: 2,
+          hits: [
+            { at: .02, arc: false, kb: 380, hitstop: 6, shake: 8, stun: .4 },
+            { at: .35, arc: false, dmg: 19, kb: 480, kbY: 300, hitstop: 8, shake: 10, stun: .55 },
+          ],
+          sfx: [{ at: .04, key: 'explode', vol: .55 }, { at: .35, key: 'hitbig', vol: .5 }],
+        },
+      ],
     },
     shanzei: {
       label: '山贼', hp: 68, speed: 196, scale: 1.85, hurtH: 176,

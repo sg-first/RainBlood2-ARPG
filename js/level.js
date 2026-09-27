@@ -31,7 +31,8 @@
       waves: [
         { gateAt: 620, trigger: 180, list: [['shanzei', 1180], ['shanzei', 1520]] },
         { gateAt: 1560, trigger: 1220, list: [['shanzei', 1980], ['yingmei', 2320], ['shanzei2', 2520]] },
-        { gateAt: 2680, trigger: 2380, list: [['blader', 3060], ['shanzei2', 3280], ['yingmei', 3400]] },
+        // 铁鬼放在最前：它速度只有 118（全场最慢），出生点离闸门近一点才来得及压上来当肉盾
+        { gateAt: 2680, trigger: 2380, list: [['tiegui', 2940], ['blader', 3060], ['shanzei2', 3280], ['yingmei', 3400]] },
       ],
     },
     {
