@@ -692,11 +692,6 @@
         Fx.add(new RB.SpriteFx(fx.sheet, this.x, this.y, {
           frames: fx.frames, scale: this.scale, flip: facing, z: 54, fps: 24,
         }));
-      } else if (arc && !fx) {
-        // 动作条没有独立特效帧时的兜底刀光 fix: 感觉应该去掉
-        Fx.add(new RB.SpriteFx('atk_combo', this.x + facing * h.ox * .6, this.y - h.oy, {
-          frames: [1, 2, 3], fps: 26, scale: T.fxScale || 1.4, flip: facing, alpha: .9, z: 54,
-        }));
       }
       Fx.dust(this.x + facing * 40, C.GROUND_Y, 4, -facing);
       Snd.play('slash', { vol: .45 });
