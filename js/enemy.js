@@ -487,8 +487,9 @@
         Fx.shake(16, .8);
         Fx.text(this.x, this.y - 300, '狂 暴', { color: '#ff3020', size: 54, life: 1.6, scalePop: 2 });
         Fx.ring(this.x, this.y - 140, 120, 'rgba(255,40,40,.95)');
-        this.T = Object.assign({}, this.T, { speed: this.T.speed * 1.34, windup: this.T.windup * .78, dmg: this.T.dmg * 1.22 });
-        // 招式同样吃狂暴加成（前摇/后摇缩短、判定更凶），数值在出招瞬间读取，无需重编事件表
+        // this.T里只修改 speed：它是唯一仍在 _ai 里从 this.T 实时读取的字段。
+        // dmg/windup 改this.attacks（招式）里面的数据
+        this.T = Object.assign({}, this.T, { speed: this.T.speed * 1.34 }); // 复制并修改this.T
         this.attacks.forEach(function (a) {
           a.windup *= .78; a.active *= .9; a.recover *= .82; a.dmg *= 1.22;
         });
@@ -498,6 +499,15 @@
       this._ai(dt, p, world);
       this.physics(dt);
       this.x = U.clamp(this.x, world.bounds[0] - 40, world.bounds[1] + 40);
+
+      // 链路：T.speed（配置意图速度 px/s）→ AI 逼近出 vx（实际速度 px/s）→ 这里换算成 anim.speed（无单位倍率）。
+      // 非走路动画一律复位为 1——this.play(name) 不会重置 anim.speed，若不复位，走路时留下的倍率会残留到攻击/受击动作条上，
+      // 而判定是按秒计的（aiT >= A.windup），动画一变速就会和判定脱节。
+      if (this.curClipName === 'walk') {
+        this.anim.speed = U.clamp(Math.abs(this.vx) / 170, .6, 1.5);
+      } else {
+        this.anim.speed = 1;
+      }
     }
 
     _ai(dt, p, world) {
@@ -518,6 +528,8 @@
       const adx = Math.abs(dx); // 与玩家的水平距离：选招、走位、侧移全看它
       const dirToP = U.sign(dx) || 1;
       const T = this.T;
+      // spd 是【意图速度】(px/s)：档案配置的目标值，只作为下面 approach 的逼近目标，不是实际速度。
+      // 实际速度是 this.vx（会被击退/减速/影子步改写），走路动画倍率也是由 vx 换算的
       const spd = T.speed;
 
       switch (this.ai) {
@@ -548,7 +560,6 @@
             // 还没进入这一招的射程 → 压上去（只有这里会播走路动画）
             this.vx = U.approach(this.vx, dirToP * spd, 1500 * dt);
             this.play('walk');
-            this.anim.speed = U.clamp(spd / 170, .6, 1.5);
             // 影子步
             if (this.T.dash && Math.random() < .012) {
               this.vx = dirToP * spd * 2.1;
