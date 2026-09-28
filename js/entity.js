@@ -272,7 +272,6 @@
       // 背刺判定：攻击者必须位于目标的"背面"一侧。
       // 1) 符号是 -face：face 是正面朝向，背面在反方向。
       // 2) 另外要求真正越过目标身体半个身宽：只比中心点的话，两者重叠时（冲刺穿身、贴身）几像素的位移就会让 sign 乱跳。
-      // 3) 不过因为敌人一直朝向玩家，所以这个基本触发不了
       const dx = atk.owner.x - this.x;
       const fromBehind = U.sign(dx) === -this.face && Math.abs(dx) > this.hurtW * .5 + 6;
 
@@ -301,7 +300,17 @@
     onHurt(atk, dmg, fromBehind, dir) {
       // 受击特效
       const hy = this.y - this.hurtH * .58 * this.squash;
-      RB.Fx.blood(this.x, hy, dir, dmg > 26 ? 20 : 11, dmg > 26 ? 1.3 : 1);
+      // 溅血带上冲击速度：攻击方位移 + 击退方向，冲得越猛血甩得越远
+      const srcVx = atk.owner ? atk.owner.vx : 0;
+      const srcVy = atk.owner ? atk.owner.vy : 0;
+      // kbBoost：把本招的击退力度(atk.kb)换算成溅血加成
+      //  - Math.min(atk.kb, 900)：封顶，避免 Boss 重击时血点甩的过远
+      //  - fromBehind ? .5 : .35：背刺更猛(配合 1.5 倍伤害)，普通受击克制一点
+      const kbBoost = Math.min(atk.kb || 0, 900) * (fromBehind ? .5 : .35);
+      RB.Fx.blood(this.x, hy, dir, dmg > 26 ? 34 : 19, dmg > 26 ? 1.3 : 1, {
+        vx: srcVx + dir * kbBoost,
+        vy: srcVy * .6 - (atk.kbY || 0) * .3,
+      });
       RB.Fx.sparks(this.x + dir * 10, hy, dmg > 26 ? 14 : 7, -dir * 0);
       RB.Fx.text(this.x + U.rand(-8, 8), hy - 30, String(dmg), {
         color: fromBehind ? '#ff5a4a' : (dmg > 26 ? '#ffd24a' : '#ffffff'),
@@ -321,7 +330,14 @@
 
     die(atk) {
       this.dead = true;
-      RB.Fx.blood(this.x, this.y - 80, U.sign(this.x - (atk ? atk.owner.x : 0)) || 1, 34, 1.6);
+      // dir: 死亡溅血方向——死者相对击杀者的位置符号(>0 右 / <0 左)
+      const dir = U.sign(this.x - (atk ? atk.owner.x : 0)) || 1;
+      RB.Fx.blood(this.x, this.y - 80, dir, 54, 1.6, {
+        // 横向：击杀者自身位移 + 沿"远离击杀者"方向甩出的 160
+        vx: (atk && atk.owner ? atk.owner.vx : 0) + dir * 160,
+        // 纵向：固定向上扬 90，和vx合成斜向喷射
+        vy: -90,
+      });
       RB.Fx.shake(9, .5);
       Snd.play('die', { vol: .8 });
       RB.bus.emit('kill', { ent: this, by: atk ? atk.owner : null });

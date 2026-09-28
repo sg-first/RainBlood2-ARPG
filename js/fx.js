@@ -118,7 +118,7 @@
       if (this.splat) {
         const gy = RB.CFG ? RB.CFG.GROUND_Y : 596;
         if (this.y >= gy) {
-          if (Math.random() < .55) Fx.groundBlood(this.x, gy, this.size, this.color);
+          if (Math.random() < .72) Fx.groundBlood(this.x, gy, this.size, this.color);
           this.dead = true;
         }
       }
@@ -151,13 +151,20 @@
           const py = Math.floor(this.y / g) * g - (s >> 1);
           ctx.fillStyle = this.color;
           ctx.fillRect(px, py, s, s);
-          // 高速时向后补一个同尺寸的拖尾点（保持颗粒一致）
-          if (Math.hypot(this.vx, this.vy) > 300) {
-            ctx.globalAlpha = a * .5;
-            ctx.fillRect(
-              Math.floor((this.x - this.vx * .014) / g) * g - (s >> 1),
-              Math.floor((this.y - this.vy * .014) / g) * g - (s >> 1),
-              s, s);
+          // 沿速度反方向拉出一串同尺寸拖尾点（速度越快尾巴越长，保持颗粒一致）
+          const sp = Math.hypot(this.vx, this.vy);
+          if (sp > 1) {
+            const ux = this.vx / sp, uy = this.vy / sp;
+            const len = U.clamp(sp * .016, 2, 18);          // 尾巴长度由速度决定，低速也至少错开一格
+            const tail = U.clamp(Math.round(len / (g * 1.2)), 1, 4);
+            for (let i = 1; i <= tail; i++) {
+              const k = i / tail;
+              ctx.globalAlpha = a * .5 * (1 - k * .7);
+              ctx.fillRect(
+                Math.floor((this.x - ux * len * k) / g) * g - (s >> 1),
+                Math.floor((this.y - uy * len * k) / g) * g - (s >> 1),
+                s, s);
+            }
           }
           break;
         }
@@ -300,7 +307,16 @@
 
     clear() { this.list.length = 0; this.decals.length = 0; this.shakeAmt = 0; this.shakeX = this.shakeY = 0; this.flash = 0; this.hitstop = 0; this.bloodMist = 0; },
 
-    add(o) { this.list.push(o); return o; },
+    add(o) {
+      // 软上限：多段连击时血点可能暴增，超限先丢最老的血点（不影响角色/精灵特效）
+      const L = this.list;
+      if (L.length > 1400) {
+        for (let i = 0; i < L.length && L.length > 1400; i++) {
+          if (L[i].type === 'p') { L.splice(i, 1); i--; }
+        }
+      }
+      L.push(o); return o;
+    },
 
     /* --- 精灵特效 --- */
     sprite(sheetKey, x, y, o) { return this.add(new SpriteFx(sheetKey, x, y, o)); },
@@ -316,41 +332,51 @@
     /* --- 粒子 --- */
     /**
      * 受击溅血：大量点状像素血点（默认 2px 网格对齐），落地会留下像素血迹
+     * @param {number} dirX   溅血方向（>0 向右）
+     * @param {object} [opt]  { vx, vy } 继承的冲击速度（攻击方/击退速度），血点会沿该方向甩出并拉出拖尾
      */
-    blood(x, y, dirX, amount, power) {
+    blood(x, y, dirX, amount, power, opt) {
+      opt = opt || {};
       amount = amount || 12; power = power || 1;
       const sgn = dirX < 0 ? -1 : 1;
-      const n = Math.round(amount * 2.8);          // 大量小点
+      // 继承速度：按击打方向投影，避免"攻击者反向移动"时血点飞错方向
+      const ivxRaw = (opt.vx || 0), ivyRaw = (opt.vy || 0);
+      const ivx = ivxRaw * (U.sign(ivxRaw) === sgn ? .75 : .3);
+      const ivy = U.clamp(ivyRaw * .45, -560, 260);
+      const imp = Math.hypot(ivx, ivy);                        // 冲击强度
+      const boost = 1 + Math.min(imp / 620, 1.15);             // 冲得越快溅得越猛
+      const n = Math.round(amount * 5 * U.lerp(1, 1.35, Math.min(imp / 700, 1))); //血点数量
       const grid = 2;
+      // 喷口：先取伤口附近 2~3 个聚集点，血点从这几个点密集喷出（±3px 抖动）
+      const nozzles = [];
+      const nc = U.randInt(2, 3);
+      for (let i = 0; i < nc; i++) {
+        nozzles.push({
+          x: x + sgn * U.rand(-2, 9) + U.rand(-4, 4),
+          y: y + U.rand(-16, 3),
+        });
+      }
       for (let i = 0; i < n; i++) {
-        const far = Math.random() < .32;           // 少量溅得更远的散点
+        const far = Math.random() < .5;           // *0.5 溅得更远的散点
         const a = U.rand(-1.45, .7) * sgn + (sgn < 0 ? Math.PI : 0);
-        const sp = U.rand(150, 620) * power * (far ? 1.45 : 1);
-        this.add(new Particle(x + U.rand(-10, 10), y + U.rand(-20, 8), {
-          vx: Math.cos(a) * sp,
-          vy: Math.sin(a) * sp - U.rand(50, 250) * power,
+        const sp = U.rand(150, 620) * power * (far ? 1.45 : 1) * boost;
+        const nz = nozzles[(Math.random() * nozzles.length) | 0];
+        this.add(new Particle(nz.x + U.rand(-3, 3), nz.y + U.rand(-3, 3), {
+          vx: Math.cos(a) * sp + ivx,
+          vy: Math.sin(a) * sp - U.rand(50, 250) * power + ivy,
           g: 1650, drag: .9,
-          life: U.rand(.3, 1) * (far ? 1.25 : 1),
+          life: U.rand(.3, 1) * (far ? 1.25 : 1) * (1 + Math.min(imp / 1400, .5)),
           size: DOT, size2: DOT,                   // 所有血点一样大
           color: bloodDotColor(),
           shape: 'pixel', grid: grid, splat: true, z: 44,
         }));
       }
-      // 少量血雾（保留一点体积感）
-      for (let i = 0; i < Math.max(2, amount / 4); i++) {
-        this.add(new Particle(x + U.rand(-14, 14), y + U.rand(-22, 4), {
-          vx: U.rand(-70, 70), vy: U.rand(-130, -20), g: -30, drag: .9,
-          life: U.rand(.4, .9), size: U.rand(9, 20), size2: 2,
-          color: 'rgba(226,20,30,.4)', shape: 'dust', alpha: .45, z: 45,
-        }));
-      }
-      this.bloodMist = Math.min(1.4, this.bloodMist + .12 * power);
     },
 
     /** 地面像素血迹：一簇对齐网格的小方块，缓慢淡出 */
     groundBlood(x, y, size, color) {
       const ds = this.decals;
-      if (ds.length > 240) ds.splice(0, ds.length - 240);
+      if (ds.length > 420) ds.splice(0, ds.length - 420);
       const g = 2;
       const s = Math.max(g, Math.round(DOT / g) * g);   // 与溅血点同尺寸
       const dots = [];

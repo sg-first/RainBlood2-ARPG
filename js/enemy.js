@@ -834,7 +834,7 @@
       if (this.deadT > .28 && !this._fadeStarted) {
         this._fadeStarted = true;
         Fx.ink(this.x, this.y - 60, 20, 320, 15);
-        Fx.blood(this.x, this.y - 70, U.sign(this.vx) || 1, 20, 1.2);
+        Fx.blood(this.x, this.y - 70, U.sign(this.vx) || 1, 32, 1.2, { vx: this.vx * .8, vy: -100 });
         for (let i = 0; i < 4; i++) {
           Fx.add(new RB.SpriteFx('e_guichaiaction', this.x + U.rand(-30, 30), this.y - U.rand(0, 60), { scale: 1, alpha: .6, z: 30 }));
         }

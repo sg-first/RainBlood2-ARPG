@@ -751,7 +751,7 @@
       this.baseUpdate(dt);
       if (this.deadT < .1) { this.play('hurt', true); Fx.stop(14); }
       if (this.deadT > .2 && this.deadT < .24) {
-        Fx.blood(this.x, this.y - 100, this.face, 46, 1.8);
+        Fx.blood(this.x, this.y - 100, this.face, 70, 1.8, { vx: this.vx * .8, vy: -140 });
         Fx.shake(14, .8);
         Snd.play('die', { vol: 1 });
       }
