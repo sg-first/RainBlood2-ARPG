@@ -97,21 +97,26 @@ window.RB = window.RB || {};
       const map = { 0: 'light', 1: 'skill', 2: 'guard', 3: 'ultra', 4: 'dash', 5: 'dash',
                     12: 'up', 13: 'down', 14: 'left', 15: 'right' };
       const states = {};
-      gp.buttons.forEach((b, i) => {
-        const a = map[i]; if (!a) return;
-        states[a] = states[a] || b.pressed || b.value > .5;
+      gp.buttons.forEach((btn, i) => {
+        const action = map[i]; 
+        if (!action) return;
+        if (btn.pressed || btn.value > .5) states[action] = true;   // 只记录真正按下的键
       });
       const ax = gp.axes[0] || 0, ay = gp.axes[1] || 0;
       if (ax < -.35) states.left = true;
       if (ax > .35) states.right = true;
       if (ay < -.4) states.up = true;
       if (ay > .4) states.down = true;
-      for (const k in states) {
+      // 只动「本帧按下」与「上一帧按下」的键；其余键（键盘正在用的）一律不动，避免覆盖键盘输入
+      const keys = new Set([...Object.keys(states), ...Object.keys(this._gpPrev)]); // 两组键名集合拼成一个数组再塞进 Sets
+      for (const k of keys) {
+        const now = !!states[k];
         const was = !!this._gpPrev[k];
-        if (states[k] && !was) this.pressed[k] = true;
-        if (!states[k] && was) this.released[k] = true;
-        this.down[k] = states[k];
+        if (now && !was) this.pressed[k] = true;
+        if (!now && was) this.released[k] = true;
+        this.down[k] = now;
       }
+      this._gpPrev = states;   // 更新上一帧手柄状态（仅含按下=true 的键）
     }
 
     /** 消费某个按键的 pressed（防止一处触发多处响应） */

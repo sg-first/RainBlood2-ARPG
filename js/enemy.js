@@ -67,7 +67,7 @@
       fxScale: 1.5,
       shadow: 1.35,
       attacks: [
-        { // 普攻·铁掌：8 帧按 fps 8 慢放正好铺满原有的 .62/.12/.58 节奏，判定落在推掌最伸展的 49 帧前后
+        { // 普攻·铁掌
           id: 'atk', weight: 4,
           anim: { sheet: 'e_tieguishuanghong', from: 45, to: 52, fps: 8 },
           dmg: 20, windup: .62, active: .12, recover: .58, cd: .55,
@@ -76,7 +76,7 @@
           fx: [{ at: .06, sheet: 'e_tieguishuanghong', frames: [53], fps: 14, scale: 1.3, offX: 104, offY: 88 }],
           sfx: [{ at: .04, key: 'hitbig', vol: .45 }],
         },
-        { // 震裂：蓄力→砸地→上勾。画面上确实是两个独立动作，故配两段判定（不是一段连击拆两刀）
+        { // 震裂：蓄力→砸地→上勾。画面上是两个独立动作，故配两段判定
           id: 'zhenlie', label: '震 裂',
           anim: { sheet: 'e_tieguizhenlie', from: 0, to: 24, fps: 21 },
           hit: { w: 176, h: 168, ox: 92, oy: 104 },
@@ -373,10 +373,7 @@
       // 招式表：单招式的敌人也会被normalizeAttacks合成为“一招”，下面的流程对两者一致
       this.attacks = normalizeAttacks(T);   // 【招式参数表】每招的：伤害/判定框/前摇判定后摇/距离/权重… —— 运行时读数值的唯一真值来源
       this.scripts = this.attacks.map(buildScript);  // 【事件时间轴】attacks[i] 编译出的事件表
-      // fix: 下面这三个应该有硬同步机制
-      this.atk = this.attacks[0];          // 当前出招引用（运行期指向 attacks[atkI]）；初始指第 0 招
-      this.atkI = 0;                       // 当前招式下标：同时索引 attacks / scripts / _atkCd / _atkFx 的「主键」
-      this._atkClip = 'atk';               // 当前招的本体动画 clip 名（= _atkClipKey(atkI)，第 0 招固定 'atk'）
+      this._setAtk(0);                     // 当前招式三元组用原子方法同步设置（初始指第 0 招，第 0 招动画固定 'atk'）
       this._atkCd = this.attacks.map(function () { return 0; });  // 各招独立冷却计时器，与 attacks 等长的数组
       this._lastAtk = -1;                  // 上一招的下标（初始 -1=无）；用于选招时降权，避免连续复读同一招
       this._scIdx = 0;                     // 事件表游标：attack 状态里按 aiT 单调扫 scripts[atkI] 的指针，每触发一个事件 +1
@@ -392,6 +389,16 @@
     /** 攻击招式 i 的本体动画 clip 名
      * 由于之前平铺的sheets里攻击字段就叫atk，所以这里第0也招固定叫 'atk'，兼容既有引用 */
     _atkClipKey(i) { return i === 0 ? 'atk' : 'atk' + i; }
+
+    /**
+     * 原子地设置「当前招式」：一次性同步 atkI（下标）/ atk（引用）/ _atkClip（动画名）。
+     * 三者都由同一个下标 i 推导，必须一起改；单独赋值容易漏掉其中一项导致运行期读错招式参数/动画。
+     */
+    _setAtk(i) {
+      this.atkI = i;
+      this.atk = this.attacks[i];
+      this._atkClip = this._atkClipKey(i);
+    }
 
     _buildClips() {
       const S = this.T.sheets;
@@ -638,9 +645,8 @@
     _startWindup(i) {
       const idx = (i === undefined || i < 0) ? 0 : i;
       const A = this.attacks[idx];
-      this.atkI = idx; this.atk = A;
+      this._setAtk(idx);                // 原子地同步 atkI / atk / _atkClip
       this._lastAtk = idx;              // 记录「实际出手」的招式，供下次选招降权
-      this._atkClip = this._atkClipKey(idx);
       this._scIdx = 0;
       this.ai = 'windup'; this.aiT = 0;
       const W = A.windup;
@@ -732,8 +738,7 @@
       if (choice < .5) {
         // 突进撞击：复用第 0 招的动作条，但判定由下面的 setTimeout 自己接管（跳过事件表）
         // fix: 这种写死的应该删掉，改用attacks配置多招式来做
-        this.atkI = 0; this.atk = this.attacks[0];
-        this._atkClip = this._atkClipKey(0);
+        this._setAtk(0);
         this._scIdx = this.scripts[0].length;      // 事件表直接走完 → 不再触发普通判定
         this.ai = 'attack'; this.aiT = 0;
         this.play(this._atkClip, true);
