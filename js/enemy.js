@@ -223,8 +223,12 @@
 
   /* ---------------- 招式表：归一化 / 编译 ---------------- */
 
-  /** 取第一个「已定义」的值（undefined 才回落到下一层） */
-  function pick(a, b, def) { return a !== undefined ? a : (b !== undefined ? b : def); }
+  /** 取第一个「有定义」的值：undefined 与 null 都视为「没有」，回落到下一层 */
+  function pick(a, b, def) {
+    return (a !== undefined && a !== null) ? a : 
+              ((b !== undefined && b !== null) ? 
+                  b : def);
+  }
 
   /**
    * 把档案编译成统一的招式表。
@@ -250,7 +254,11 @@
         maxRange: maxRange,
         standRange: pick(s.standRange, maxRange * .86),
         weight: pick(s.weight, 1),
-        kb: s.kb, kbY: s.kbY, hitstop: s.hitstop, shake: s.shake, stun: s.stun,
+        // 都没写时要留 undefined：这样 _strike 的硬逻辑兜底（如 kb = 260 + dmg*8）才轮得到；
+        // 若这里填了默认值，招式级就恒有值，兜底公式永远失效。
+        kb: pick(s.kb, T.kb, undefined), kbY: pick(s.kbY, T.kbY, undefined),
+        hitstop: pick(s.hitstop, T.hitstop, undefined), shake: pick(s.shake, T.shake, undefined),
+        stun: pick(s.stun, T.stun, undefined),
         rush: s.rush || null,
         hits: (s.hits && s.hits.length) ? s.hits : null,
         fx: (s.fx && s.fx.length) ? s.fx : null,
@@ -510,7 +518,7 @@
       const adx = Math.abs(dx); // 与玩家的水平距离：选招、走位、侧移全看它
       const dirToP = U.sign(dx) || 1;
       const T = this.T;
-      const spd = T.speed * (this.enraged ? 1.2 : 1);
+      const spd = T.speed;
 
       switch (this.ai) {
         case 'idle': {
