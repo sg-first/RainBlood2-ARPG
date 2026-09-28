@@ -255,44 +255,8 @@
         }
         ctx.restore();
       }
-
-      // 血月
-      this._drawMoon(ctx, camX);
     }
-
-    _drawMoon(ctx, camX) {
-      const mx = 980 - camX * .04;
-      const my = 128;
-      ctx.save();
-      const isBoss = this.chapterIdx === CHAPTERS.length - 1;
-      const r = isBoss ? 118 : 74;
-      const grd = ctx.createRadialGradient(mx, my, r * .2, mx, my, r * 3.1);
-      grd.addColorStop(0, isBoss ? 'rgba(230,40,44,.5)' : 'rgba(210,60,60,.22)');
-      grd.addColorStop(.35, isBoss ? 'rgba(170,20,26,.24)' : 'rgba(140,30,36,.1)');
-      grd.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = grd;
-      ctx.beginPath(); ctx.arc(mx, my, r * 3.1, 0, 6.2832); ctx.fill();
-
-      ctx.globalAlpha = .9;
-      const g2 = ctx.createRadialGradient(mx - r * .3, my - r * .3, r * .1, mx, my, r);
-      g2.addColorStop(0, isBoss ? 'rgba(255,90,86,.9)' : 'rgba(226,214,200,.82)');
-      g2.addColorStop(.65, isBoss ? 'rgba(190,26,32,.72)' : 'rgba(178,166,158,.6)');
-      g2.addColorStop(1, 'rgba(70,60,60,.35)');
-      ctx.fillStyle = g2;
-      ctx.beginPath(); ctx.arc(mx, my, r, 0, 6.2832); ctx.fill();
-      // 月面纹理
-      ctx.globalCompositeOperation = 'multiply';
-      ctx.globalAlpha = .12;
-      ctx.fillStyle = '#3a3038';
-      for (let i = 0; i < 9; i++) {
-        const a = i * 2.1, rr = r * (.24 + (i % 3) * .2);
-        ctx.beginPath();
-        ctx.arc(mx + Math.cos(a) * rr, my + Math.sin(a) * rr * .8, r * (.07 + (i % 4) * .035), 0, 6.2832);
-        ctx.fill();
-      }
-      ctx.restore();
-    }
-
+    
     /** 地面（屏幕坐标绘制，因为地面基本水平） */
     drawGround(ctx, camX) {
       const W = C.VIEW_W, H = C.VIEW_H, gy = C.GROUND_Y, g = this.data.ground;
